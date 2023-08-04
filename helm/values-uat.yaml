@@ -1,0 +1,120 @@
+microservice-chart:
+  namespace: "shared"
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
+    tag: "0.0.0"
+    pullPolicy: Always
+  livenessProbe:
+    httpGet:
+      path: /q/health/live
+      port: 8080
+    initialDelaySeconds: 90
+    failureThreshold: 6
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /q/health/ready
+      port: 8080
+    initialDelaySeconds: 90
+    failureThreshold: 6
+    periodSeconds: 10
+  deployment:
+    create: true
+  serviceMonitor:
+    create: true
+    endpoints:
+      - interval: 10s #jmx-exporter
+        targetPort: 12345
+        path: /metrics
+  ports:
+    - 8080 #http
+    - 12345 #jmx-exporter
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080 #http
+      - 12345 #jmx-exporter
+  ingress:
+    create: true
+    host: "weuuat.shared.internal.dev.platform.pagopa.it"
+    path: /authorizer-config/(.*)
+  serviceAccount:
+    create: false
+    annotations: { }
+    name: ""
+  podAnnotations: { }
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "0.25"
+    limits:
+      memory: "512Mi"
+      cpu: "0.25"
+  autoscaling:
+    enable: true
+    minReplica: 1
+    maxReplica: 3
+    pollingInterval: 10 # seconds
+    cooldownPeriod: 50 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          # Required
+          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+          value: "75"
+  envConfig:
+    WEBSITE_SITE_NAME: 'pagopaplatformauthorizerconfig'
+    ENV: 'uat'
+    APP_LOGGING_LEVEL: 'DEBUG'
+    DEFAULT_LOGGING_LEVEL: 'INFO'
+    ENABLE_ECS_CONSOLE: "true"
+    OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopaplatformauthorizerconfigotl,deployment.environment=uat"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
+    OTEL_LOGS_EXPORTER: none
+    OTEL_TRACES_SAMPLER: "always_on"
+    JAVA_TOOL_OPTIONS: "-javaagent:/deployments/jmx_prometheus_javaagent-0.19.0.jar=12345:/deployments/config.yaml -javaagent:/home/site/wwwroot/opentelemetry-javaagent.jar -Xmx1024m"
+  envSecret:
+    # required
+    APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'
+    OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
+  keyvault:
+    name: "pagopa-u-shared-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  nodeSelector: { }
+  tolerations: [ ]
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
+  canaryDelivery:
+    create: true
+    ingress:
+      create: true
+      canary:
+        type: header
+        headerName: X-Canary
+        headerValue: canary
+        weightPercent: 0
+    service:
+      create: true
+    deployment:
+      create: true
+      image:
+        repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
+        tag: "0.0.0"
+        pullPolicy: Always
+      envConfig: { }
+      envSecret: { }

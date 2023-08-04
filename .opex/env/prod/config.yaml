@@ -1,5 +1,5 @@
 oa3_spec: ./openapi/openapi.json # If start with http the file would be downloaded from the internet
-name: opex_<your-repo-name> # TODO
+name: opex_pagopa-platform-authorizer-config
 location: West Europe
 timespan: 5m # Default, a number or a timespan https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/scalar-data-types/timespan
 # TODO configure data_source according to public or private configuration

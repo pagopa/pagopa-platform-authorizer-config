@@ -18,6 +18,7 @@ import javax.ws.rs.core.UriBuilder;
 @Path("")
 @Produces(value = MediaType.APPLICATION_JSON)
 public class Generic {
+
     @ConfigProperty(name = "quarkus.application.name", defaultValue = "")
     private String name;
 
