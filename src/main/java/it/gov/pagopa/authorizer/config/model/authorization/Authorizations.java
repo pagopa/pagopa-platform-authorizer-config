@@ -18,9 +18,9 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AuthorizationDetailList implements Serializable {
+public class Authorizations implements Serializable {
 
   @JsonProperty("authorizations")
   @NotNull
-  private List<AuthorizationDetail> authorizations;
+  private List<Authorization> authorizations;
 }

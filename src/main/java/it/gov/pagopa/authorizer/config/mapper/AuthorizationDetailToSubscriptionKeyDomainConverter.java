@@ -4,7 +4,7 @@ import it.gov.pagopa.authorizer.config.entity.AuthorizedEntity;
 import it.gov.pagopa.authorizer.config.entity.GenericPair;
 import it.gov.pagopa.authorizer.config.entity.Metadata;
 import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
-import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationDetail;
+import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationEntity;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationMetadata;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationOwner;
@@ -16,16 +16,16 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class AuthorizationDetailToSubscriptionKeyDomainConverter implements Converter<AuthorizationDetail, SubscriptionKeyDomain> {
+public class AuthorizationDetailToSubscriptionKeyDomainConverter implements Converter<Authorization, SubscriptionKeyDomain> {
 
   @Override
-  public SubscriptionKeyDomain convert(MappingContext<AuthorizationDetail, SubscriptionKeyDomain> context) {
-    @Valid AuthorizationDetail source = context.getSource();
+  public SubscriptionKeyDomain convert(MappingContext<Authorization, SubscriptionKeyDomain> context) {
+    @Valid Authorization source = context.getSource();
     @Valid @NotNull AuthorizationOwner owner = source.getOwner();
     return SubscriptionKeyDomain.builder()
         .id(source.getId() != null ? source.getId() : UUID.randomUUID().toString())
         .domain(source.getDomain())
-        .subscriptionKey(source.getSubscriptionKey())
+        .subkey(source.getSubscriptionKey())
         .ownerId(owner.getId())
         .ownerName(owner.getName())
         .ownerType(owner.getType().getValue())

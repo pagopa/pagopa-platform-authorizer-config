@@ -23,7 +23,7 @@ import java.util.List;
 @ToString
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AuthorizationDetail implements Serializable {
+public class Authorization implements Serializable {
 
   @JsonProperty("id")
   private String id;

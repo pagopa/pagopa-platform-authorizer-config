@@ -3,7 +3,7 @@ package it.gov.pagopa.authorizer.config.config;
 import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
 import it.gov.pagopa.authorizer.config.mapper.AuthorizationDetailToSubscriptionKeyDomainConverter;
 import it.gov.pagopa.authorizer.config.mapper.SubscriptionKeyDomainToAuthorizationDetailConverter;
-import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationDetail;
+import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -18,11 +18,11 @@ public class MappingsConfiguration {
     ModelMapper mapper = new ModelMapper();
     mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-    Converter<AuthorizationDetail, SubscriptionKeyDomain> authorizationDetailToSubscriptionKeyDomainConverter = new AuthorizationDetailToSubscriptionKeyDomainConverter();
-    mapper.createTypeMap(AuthorizationDetail.class, SubscriptionKeyDomain.class).setConverter(authorizationDetailToSubscriptionKeyDomainConverter);
+    Converter<Authorization, SubscriptionKeyDomain> authorizationDetailToSubscriptionKeyDomainConverter = new AuthorizationDetailToSubscriptionKeyDomainConverter();
+    mapper.createTypeMap(Authorization.class, SubscriptionKeyDomain.class).setConverter(authorizationDetailToSubscriptionKeyDomainConverter);
 
-    Converter<SubscriptionKeyDomain, AuthorizationDetail> subscriptionKeyDomainToAuthorizationDetailConverter = new SubscriptionKeyDomainToAuthorizationDetailConverter();
-    mapper.createTypeMap(SubscriptionKeyDomain.class, AuthorizationDetail.class).setConverter(subscriptionKeyDomainToAuthorizationDetailConverter);
+    Converter<SubscriptionKeyDomain, Authorization> subscriptionKeyDomainToAuthorizationDetailConverter = new SubscriptionKeyDomainToAuthorizationDetailConverter();
+    mapper.createTypeMap(SubscriptionKeyDomain.class, Authorization.class).setConverter(subscriptionKeyDomainToAuthorizationDetailConverter);
 
     return mapper;
   }

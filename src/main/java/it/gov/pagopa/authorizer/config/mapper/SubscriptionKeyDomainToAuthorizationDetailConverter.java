@@ -3,7 +3,7 @@ package it.gov.pagopa.authorizer.config.mapper;
 import it.gov.pagopa.authorizer.config.entity.AuthorizedEntity;
 import it.gov.pagopa.authorizer.config.entity.Metadata;
 import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
-import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationDetail;
+import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationEntity;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationGenericKeyValue;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationMetadata;
@@ -20,15 +20,15 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SubscriptionKeyDomainToAuthorizationDetailConverter implements Converter<SubscriptionKeyDomain, AuthorizationDetail> {
+public class SubscriptionKeyDomainToAuthorizationDetailConverter implements Converter<SubscriptionKeyDomain, Authorization> {
 
   @Override
-  public AuthorizationDetail convert(MappingContext<SubscriptionKeyDomain, AuthorizationDetail> context) {
+  public Authorization convert(MappingContext<SubscriptionKeyDomain, Authorization> context) {
     @Valid SubscriptionKeyDomain source = context.getSource();
-    return AuthorizationDetail.builder()
+    return Authorization.builder()
         .id(source.getId())
         .domain(source.getDomain())
-        .subscriptionKey(source.getSubscriptionKey())
+        .subscriptionKey(source.getSubkey())
         .owner(AuthorizationOwner.builder()
             .id(source.getOwnerId())
             .name(source.getOwnerName())

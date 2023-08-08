@@ -22,6 +22,11 @@ public enum OwnerType {
   CI("CI"),
 
   /**
+   * Enumeration value for generic kind of owner.
+   */
+  OTHER("OTHER"),
+
+  /**
    * Enumeration value for Payment Service Provider.
    */
   PSP("PSP");

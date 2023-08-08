@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.gov.pagopa.authorizer.config.model.ProblemJson;
-import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationDetail;
-import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationDetailList;
+import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
+import it.gov.pagopa.authorizer.config.model.authorization.Authorizations;
 import it.gov.pagopa.authorizer.config.service.AuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -61,14 +61,14 @@ public class AuthorizationController {
       tags = { "Authorizations" })
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationDetailList.class))),
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Authorizations.class))),
           @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
       })
   @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<AuthorizationDetailList> getAuthorizations(
+  public ResponseEntity<Authorizations> getAuthorizations(
       @Parameter(description = "The domain on which the authorizations will be filtered.", required = true)
       @NotBlank @RequestParam("domain") String domain,
       @Parameter(description = "The identifier of the authorizations' owner.")
@@ -95,7 +95,7 @@ public class AuthorizationController {
       tags = { "Authorizations" })
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationDetailList.class))),
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Authorizations.class))),
           @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
@@ -103,7 +103,7 @@ public class AuthorizationController {
           @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
       })
   @GetMapping(value = "/{authorizationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<AuthorizationDetail> getAuthorization(
+  public ResponseEntity<Authorization> getAuthorization(
       @Parameter(description = "The identifier of the stored authorization.", required = true)
       @PathVariable("authorizationId") String authorizationId) {
     return ResponseEntity.ok(authorizationService.getAuthorization(authorizationId));
@@ -124,7 +124,7 @@ public class AuthorizationController {
       tags = { "Authorizations" })
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationDetailList.class))),
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Authorizations.class))),
           @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
@@ -132,7 +132,7 @@ public class AuthorizationController {
           @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
       })
   @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<AuthorizationDetail> createAuthorization(@RequestBody @Valid @NotNull AuthorizationDetail authorization) {
+  public ResponseEntity<Authorization> createAuthorization(@RequestBody @Valid @NotNull Authorization authorization) {
     return ResponseEntity.ok(authorizationService.createAuthorization(authorization));
   }
 
@@ -152,7 +152,7 @@ public class AuthorizationController {
       tags = { "Authorizations" })
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationDetailList.class))),
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Authorizations.class))),
           @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
@@ -160,10 +160,10 @@ public class AuthorizationController {
           @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
       })
   @PutMapping(value = "/{authorizationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<AuthorizationDetail> updateAuthorization(
+  public ResponseEntity<Authorization> updateAuthorization(
       @Parameter(description = "The identifier of the stored authorization.", required = true)
       @PathVariable("authorizationId") String authorizationId,
-      @RequestBody @Valid @NotNull AuthorizationDetail authorization
+      @RequestBody @Valid @NotNull Authorization authorization
   ) {
     return ResponseEntity.ok(authorizationService.updateAuthorization(authorizationId, authorization));
   }
@@ -191,7 +191,7 @@ public class AuthorizationController {
           @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
       })
   @DeleteMapping(value = "/{authorizationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<AuthorizationDetail> deleteAuthorization(
+  public ResponseEntity<Authorization> deleteAuthorization(
       @Parameter(description = "The identifier of the stored authorization.", required = true)
       @PathVariable("authorizationId") String authorizationId) {
     authorizationService.deleteAuthorization(authorizationId);
