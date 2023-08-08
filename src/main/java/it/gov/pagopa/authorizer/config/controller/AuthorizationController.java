@@ -72,7 +72,7 @@ public class AuthorizationController {
       @Parameter(description = "The domain on which the authorizations will be filtered.", required = true)
       @NotBlank @RequestParam("domain") String domain,
       @Parameter(description = "The identifier of the authorizations' owner.")
-      @RequestParam("ownerId") String ownerId,
+      @RequestParam(value = "ownerId", required = false) String ownerId,
       @Parameter(description = "The number of elements to be included in the page.", required = true)
       @Valid @RequestParam(required = false, defaultValue = "10") @Positive @Max(999) Integer limit,
       @Parameter(description = "The index of the page, starting from 0.", required = true)
