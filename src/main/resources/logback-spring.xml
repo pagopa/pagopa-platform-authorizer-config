@@ -23,11 +23,11 @@
         <springProperty name="ECS_SERVICE_NAME" source="info.application.name"/>
         <springProperty name="ENV" source="info.properties.environment"/>
         <appender name="ECS_JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="it.gov.pagopa.authorizer.config.util.EcsEncoder">
+            <encoder class="it.gov.pagopa.authorizer.config.util.logging.EcsEncoder">
                 <serviceName>${ECS_SERVICE_NAME}</serviceName>
                 <serviceVersion>${ECS_SERVICE_VERSION}</serviceVersion>
                 <serviceEnvironment>${ENV}</serviceEnvironment>
-                <messageLayout class="it.gov.pagopa.authorizer.config.util.MaskingEcsPatternLayout">
+                <messageLayout class="it.gov.pagopa.authorizer.config.util.logging.MaskingEcsPatternLayout">
                   <maskPattern>\"*subscription\s*[k|K]ey\"*[:|=]*\s*[\[|\"|\{]*[a-zA-z0-9]{3}(.*?)[a-zA-z0-9]{3}[\]|\"|\}|,|;|\.]</maskPattern>
                   <pattern>{}</pattern>
                 </messageLayout>

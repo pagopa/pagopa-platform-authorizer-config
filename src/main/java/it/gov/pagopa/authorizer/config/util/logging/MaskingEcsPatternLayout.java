@@ -1,4 +1,4 @@
-package it.gov.pagopa.authorizer.config.util;
+package it.gov.pagopa.authorizer.config.util.logging;
 
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;

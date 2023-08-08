@@ -22,7 +22,7 @@
  * under the License.
  * #L%
  */
-package it.gov.pagopa.authorizer.config.util;
+package it.gov.pagopa.authorizer.config.util.logging;
 
 import ch.qos.logback.classic.pattern.ThrowableHandlingConverter;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
