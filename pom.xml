@@ -21,6 +21,29 @@
     <azure.cosmosdb.data.version>3.32.0</azure.cosmosdb.data.version>
   </properties>
 
+  <profiles>
+    <!--
+    This particular configuration is needed in order to connect from local to Redis Cache in DEV environment,
+    if you have a Mac M1 processor. If this cause problems on your PC, please comment it.
+    -->
+    <profile>
+      <id>local</id>
+      <activation>
+        <os>
+          <family>mac</family>
+          <arch>aarch64</arch>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-resolver-dns-native-macos</artifactId>
+          <classifier>osx-aarch_64</classifier>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
