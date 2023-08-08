@@ -15,6 +15,9 @@ public interface AuthorizationRepository extends CosmosRepository<SubscriptionKe
   @Query("SELECT * FROM skeydomains s WHERE s.domain = @domain AND s.subscription_key = @subscription_key")
   List<SubscriptionKeyDomain> findByDomainAndSubscriptionKey(@Param("domain") String domain, @Param("subscription_key") String subscriptionKey);
 
+  @Query("SELECT * FROM skeydomains s WHERE s.domain = @domain AND (IS_NULL(@ownerId) OR s.ownerId = @ownerId)")
+  List<SubscriptionKeyDomain> getSubkeyByDomainAndOwnerId(@Param("domain") String domain, @Param("ownerId") String ownerId);
+
   Page<SubscriptionKeyDomain> findByDomainAndOwnerId(String domain, String ownerId, Pageable pageable);
 
   Page<SubscriptionKeyDomain> findByDomain(String domain, Pageable pageable);
