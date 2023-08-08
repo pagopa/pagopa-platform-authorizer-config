@@ -3,9 +3,12 @@ package it.gov.pagopa.authorizer.config.service;
 import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
 import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
-import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationDetail;
-import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationDetailList;
+import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
+import it.gov.pagopa.authorizer.config.model.authorization.Authorizations;
+import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorization;
+import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorizations;
 import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
+import it.gov.pagopa.authorizer.config.repository.CachedAuthorizationRepository;
 import it.gov.pagopa.authorizer.config.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,8 +20,8 @@ import org.springframework.stereotype.Service;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,31 +29,34 @@ import java.util.stream.Collectors;
 public class AuthorizationService {
 
   @Autowired
+  private CachedAuthorizationRepository cachedAuthorizationRepository;
+
+  @Autowired
   private AuthorizationRepository authorizationRepository;
 
   @Autowired
   private ModelMapper modelMapper;
 
-  public AuthorizationDetailList getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
+  public Authorizations getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
     Page<SubscriptionKeyDomain> resultSet;
     if (ownerId != null) {
       resultSet = authorizationRepository.findByDomainAndOwnerId(domain, ownerId, pageable);
     } else {
       resultSet = authorizationRepository.findByDomain(domain, pageable);
     }
-    return AuthorizationDetailList.builder()
+    return Authorizations.builder()
         .authorizations(resultSet.isEmpty() ? List.of() : resultSet.getContent().stream()
-            .map(entity -> modelMapper.map(entity, AuthorizationDetail.class))
+            .map(entity -> modelMapper.map(entity, Authorization.class))
             .collect(Collectors.toList()))
         .build();
   }
 
-  public AuthorizationDetail getAuthorization(@NotNull String authorizationId) {
+  public Authorization getAuthorization(@NotNull String authorizationId) {
     SubscriptionKeyDomain entity = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.AUTHORIZATION_NOT_FOUND, authorizationId));
-    return modelMapper.map(entity, AuthorizationDetail.class);
+    return modelMapper.map(entity, Authorization.class);
   }
 
-  public AuthorizationDetail createAuthorization(@NotNull AuthorizationDetail authorization) {
+  public Authorization createAuthorization(@NotNull Authorization authorization) {
     // check if another authorization for the same pair domain-subkey already exists
     if (!authorizationRepository.findByDomainAndSubscriptionKey(authorization.getDomain(), authorization.getSubscriptionKey()).isEmpty()) {
       throw new AppException(AppError.AUTHORIZATION_CONFLICT, authorization.getDomain(), authorization.getSubscriptionKey());
@@ -68,13 +74,13 @@ public class AuthorizationService {
       log.error("An error occurred while persisting the authorization.", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, "Internal server error", "An error occurred while persisting the authorization.");
     }
-    return modelMapper.map(subscriptionKeyDomain, AuthorizationDetail.class);
+    return modelMapper.map(subscriptionKeyDomain, Authorization.class);
   }
 
-  public AuthorizationDetail updateAuthorization(@NotNull String authorizationId, @NotNull AuthorizationDetail authorization) {
+  public Authorization updateAuthorization(@NotNull String authorizationId, @NotNull Authorization authorization) {
     // check if the authorization with the ID already exists
     SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.AUTHORIZATION_NOT_FOUND, authorizationId));
-    if (!existingSubscriptionKeyDomain.getDomain().equals(authorization.getDomain()) || !existingSubscriptionKeyDomain.getSubscriptionKey().equals(authorization.getSubscriptionKey())) {
+    if (!existingSubscriptionKeyDomain.getDomain().equals(authorization.getDomain()) || !existingSubscriptionKeyDomain.getSubkey().equals(authorization.getSubscriptionKey())) {
       throw new AppException(AppError.BAD_REQUEST_CHANGED_DOMAIN_OR_SUBKEY);
     }
     // mapping the entity to be saved and update the dates
@@ -90,12 +96,34 @@ public class AuthorizationService {
     existingSubscriptionKeyDomain.setLastForcedRefresh(now);
     existingSubscriptionKeyDomain.setLastUpdate(now);
     // save and return the final object
-    return modelMapper.map(authorizationRepository.save(existingSubscriptionKeyDomain), AuthorizationDetail.class);
+    return modelMapper.map(authorizationRepository.save(existingSubscriptionKeyDomain), Authorization.class);
   }
 
   public void deleteAuthorization(@NotNull String authorizationId) {
     SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.AUTHORIZATION_NOT_FOUND, authorizationId));
+    String domain = existingSubscriptionKeyDomain.getDomain();
+    String subscriptionKey = existingSubscriptionKeyDomain.getSubkey();
     authorizationRepository.delete(existingSubscriptionKeyDomain);
-    // TODO triggering the deletion of cached element in async
+    cachedAuthorizationRepository.remove(domain, subscriptionKey);
   }
+
+  public CachedAuthorizations getCachedAuthorization(@NotNull String domain, String ownerId) {
+    List<CachedAuthorization> cachedAuthorizations = new LinkedList<>();
+    List<SubscriptionKeyDomain> entities = authorizationRepository.getSubkeyByDomainAndOwnerId(domain, ownerId);
+    for (SubscriptionKeyDomain entity : entities) {
+      String subscriptionKey = entity.getSubkey();
+      Long ttl = cachedAuthorizationRepository.getTTL(domain, subscriptionKey);
+      if (ttl != null) {
+        cachedAuthorizations.add(CachedAuthorization.builder()
+            .owner(entity.getOwnerId())
+            .subscriptionKey(subscriptionKey)
+            .ttl(ttl / 60)
+            .build());
+      }
+    }
+    return CachedAuthorizations.builder()
+        .cachedAuthorizations(cachedAuthorizations)
+        .build();
+  }
+
 }
