@@ -15,9 +15,16 @@ public class CachedAuthorizationRepository {
   @Value("${authorizer.cache.authorization.key-format}")
   private String cachedAuthorizationFormat;
 
+  @Value("${authorizer.cache.authorization.lock-key-format}")
+  private String lockRefreshAuthorizationFormat;
+
   @Autowired
   @Qualifier("object")
   private RedisTemplate<String, Object> template;
+
+  public Long getTTL(String domain) {
+    return template.getExpire(getAPIMStoreVarKey(domain), TimeUnit.SECONDS);
+  }
 
   public Long getTTL(String domain, String subscriptionKey) {
     return template.getExpire(getAPIMKey(domain, subscriptionKey), TimeUnit.SECONDS);
@@ -25,6 +32,10 @@ public class CachedAuthorizationRepository {
 
   public void remove(String domain, String subscriptionKey) {
     template.delete(getAPIMKey(domain, subscriptionKey));
+  }
+
+  private String getAPIMStoreVarKey(String domain) {
+    return String.format(lockRefreshAuthorizationFormat, domain);
   }
 
   private String getAPIMKey(String domain, String subscriptionKey) {

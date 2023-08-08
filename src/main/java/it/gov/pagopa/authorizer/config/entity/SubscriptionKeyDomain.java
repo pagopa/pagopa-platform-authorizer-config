@@ -45,6 +45,5 @@ public class SubscriptionKeyDomain implements Serializable {
 
   private String lastForcedRefresh;
 
-  @JsonProperty("_ts")
   private String lastUpdate;
 }

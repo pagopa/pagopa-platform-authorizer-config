@@ -39,9 +39,7 @@ public class SubscriptionKeyDomainToAuthorizationDetailConverter implements Conv
         .otherMetadata(convertMetadata(source.getOtherMetadata()))
         .insertedAt(source.getInsertedAt())
         .lastForcedRefresh(source.getLastForcedRefresh())
-        .lastUpdate(Instant.ofEpochMilli(Long.parseLong(source.getLastUpdate()) * 1000)
-            .atZone(ZoneId.of("UTC"))
-            .format(Constants.DATE_FORMATTER))
+        .lastUpdate(source.getLastUpdate())
         .build();
   }
 

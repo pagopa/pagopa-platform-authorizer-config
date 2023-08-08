@@ -9,6 +9,7 @@ import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthoriza
 import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorizations;
 import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
 import it.gov.pagopa.authorizer.config.repository.CachedAuthorizationRepository;
+import it.gov.pagopa.authorizer.config.util.CommonUtil;
 import it.gov.pagopa.authorizer.config.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -38,16 +39,17 @@ public class AuthorizationService {
   private ModelMapper modelMapper;
 
   public Authorizations getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
-    Page<SubscriptionKeyDomain> resultSet;
+    Page<SubscriptionKeyDomain> page;
     if (ownerId != null) {
-      resultSet = authorizationRepository.findByDomainAndOwnerId(domain, ownerId, pageable);
+      page = authorizationRepository.findByDomainAndOwnerId(domain, ownerId, pageable);
     } else {
-      resultSet = authorizationRepository.findByDomain(domain, pageable);
+      page = authorizationRepository.findByDomain(domain, pageable);
     }
     return Authorizations.builder()
-        .authorizations(resultSet.isEmpty() ? List.of() : resultSet.getContent().stream()
+        .authorizations(page.isEmpty() ? List.of() : page.getContent().stream()
             .map(entity -> modelMapper.map(entity, Authorization.class))
             .collect(Collectors.toList()))
+        .pageInfo(CommonUtil.buildPageInfo(page))
         .build();
   }
 
@@ -107,9 +109,16 @@ public class AuthorizationService {
     cachedAuthorizationRepository.remove(domain, subscriptionKey);
   }
 
-  public CachedAuthorizations getCachedAuthorization(@NotNull String domain, String ownerId) {
+  public CachedAuthorizations getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL) {
     List<CachedAuthorization> cachedAuthorizations = new LinkedList<>();
-    List<SubscriptionKeyDomain> entities = authorizationRepository.getSubkeyByDomainAndOwnerId(domain, ownerId);
+    List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
+    // insert info about STORE's locking variable
+    Long storeVariableTTL = cachedAuthorizationRepository.getTTL(domain);
+    cachedAuthorizations.add(CachedAuthorization.builder()
+        .description(String.format("Locking state for domain %s (remaining time before unlocking automatic refresh)", domain))
+        .ttl(convertTTL ? CommonUtil.convertTTLToString(storeVariableTTL) : Long.toString(storeVariableTTL))
+        .build());
+    // insert info about all cached authorizations
     for (SubscriptionKeyDomain entity : entities) {
       String subscriptionKey = entity.getSubkey();
       Long ttl = cachedAuthorizationRepository.getTTL(domain, subscriptionKey);
@@ -117,7 +126,7 @@ public class AuthorizationService {
         cachedAuthorizations.add(CachedAuthorization.builder()
             .owner(entity.getOwnerId())
             .subscriptionKey(subscriptionKey)
-            .ttl(ttl / 60)
+            .ttl(convertTTL ? CommonUtil.convertTTLToString(ttl) : Long.toString(ttl))
             .build());
       }
     }
@@ -126,4 +135,12 @@ public class AuthorizationService {
         .build();
   }
 
+  public void refreshCachedAuthorizations(@NotNull String domain, String ownerId) {
+    List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
+    String now = LocalDateTime.now().format(Constants.DATE_FORMATTER);
+    for (SubscriptionKeyDomain entity : entities) {
+      entity.setLastForcedRefresh(now);
+    }
+    authorizationRepository.saveAll(entities);
+  }
 }

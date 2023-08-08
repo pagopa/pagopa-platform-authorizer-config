@@ -21,6 +21,9 @@ import lombok.ToString;
 @JsonInclude(Include.NON_NULL)
 public class CachedAuthorization {
 
+  @JsonProperty("description")
+  private String description;
+
   @JsonProperty("owner")
   private String owner;
 
@@ -28,5 +31,5 @@ public class CachedAuthorization {
   private String subscriptionKey;
 
   @JsonProperty("ttl")
-  private Long ttl;
+  private String ttl;
 }
