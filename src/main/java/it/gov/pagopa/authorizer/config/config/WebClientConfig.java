@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import reactor.netty.http.client.HttpClient;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@Slf4j
 public class WebClientConfig {
 
   @Bean(name = "apiconfigSelfcareClient")
@@ -31,6 +33,7 @@ public class WebClientConfig {
     HttpClient httpClient = HttpClient.create()
         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connTimeout)
         .doOnConnected(connection -> connection.addHandlerLast(new ReadTimeoutHandler(timeout, TimeUnit.MILLISECONDS)));
+    log.debug(String.format("Defining a web-client pointing towards APIConfig-Selfcare Integration service. Base URL: [%s].", hostname));
     return WebClient.builder()
         .baseUrl(hostname)
         .defaultHeader("Ocp-Apim-Subscription-Key", subscriptionKey)

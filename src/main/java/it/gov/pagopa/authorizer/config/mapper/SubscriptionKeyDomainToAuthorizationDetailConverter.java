@@ -9,14 +9,11 @@ import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationGenericK
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationMetadata;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationOwner;
 import it.gov.pagopa.authorizer.config.model.authorization.OwnerType;
-import it.gov.pagopa.authorizer.config.util.Constants;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
