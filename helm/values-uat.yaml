@@ -74,11 +74,15 @@ microservice-chart:
     COSMOS_URI: "https://pagopa-u-weu-shared-auth-cosmos-account.documents.azure.com:443/"
     REDIS_HOST: "pagopa-u-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
+    CLIENT_READ_TIMEOUT: "10000"
+    CLIENT_CONNECTION_TIMEOUT: "10000"
+    APICONFIG_SELFCARE_INTEGRATION_PATH: "https://api.uat.platform.pagopa.it/apiconfig-selfcare-integration/v1"
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'
     OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
-    COSMOS_KEY: auth-u-cosmos-key
-    REDIS_PASSWORD: redis-password
+    COSMOS_KEY: 'auth-u-cosmos-key'
+    REDIS_PASSWORD: 'redis-password'
+    APICONFIG_SELFCARE_INTEGRATION_SUBKEY: 'auth-u-apiconfig-selfcare-integration-subkey'
   keyvault:
     name: "pagopa-u-shared-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
