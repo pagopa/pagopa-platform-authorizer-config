@@ -122,7 +122,7 @@ public class AuthorizationService {
     for (SubscriptionKeyDomain entity : entities) {
       String subscriptionKey = entity.getSubkey();
       Long ttl = cachedAuthorizationRepository.getTTL(domain, subscriptionKey);
-      if (ttl != null) {
+      if (ttl != null && ttl > 0) {
         cachedAuthorizations.add(CachedAuthorization.builder()
             .owner(entity.getOwnerId())
             .subscriptionKey(subscriptionKey)

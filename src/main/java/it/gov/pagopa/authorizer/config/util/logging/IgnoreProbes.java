@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class IgnoreProbes extends Filter<ILoggingEvent> {
 
-  private static final Pattern HEALTH_OR_PROMETHEUS = Pattern.compile("GET /actuator/health/");
+  private static final Pattern HEALTH_OR_PROMETHEUS = Pattern.compile("^.*(GET \\/actuator\\/health\\/).*$");
 
   private Set<String> activeThreads = new HashSet<>();
 
