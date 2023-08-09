@@ -77,6 +77,7 @@ microservice-chart:
     CLIENT_READ_TIMEOUT: "10000"
     CLIENT_CONNECTION_TIMEOUT: "10000"
     APICONFIG_SELFCARE_INTEGRATION_PATH: "https://api.dev.platform.pagopa.it/apiconfig-selfcare-integration/v1"
+    CORS_CONFIGURATION: '{"origins": ["*"], "methods": ["*"]}'
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
     OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
