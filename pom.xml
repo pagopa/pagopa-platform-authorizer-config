@@ -7,7 +7,7 @@
 
   <groupId>it.gov.pagopa</groupId>
   <artifactId>platform-authorizer-config</artifactId>
-  <version>0.0.1-10-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer</version>
+  <version>0.0.1-11-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer</version>
   <name>pagopa-platform-authorizer-config</name>
   <description>A microservice that provides a set of APIs to manage authorization records for the Authorizer system.</description>
 
