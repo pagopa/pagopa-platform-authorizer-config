@@ -13,7 +13,7 @@ on:
         type: string
 
 env:
-  APP_NAME: platform-authorizer-config
+  APP_NAME: authorizerconfig
 
 
 permissions:
