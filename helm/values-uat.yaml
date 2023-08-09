@@ -77,7 +77,7 @@ microservice-chart:
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'
     OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
-    COSMOS_KEY: cosmos-authorizer-key
+    COSMOS_KEY: auth-u-cosmos-key
     REDIS_PASSWORD: redis-password
   keyvault:
     name: "pagopa-u-shared-kv"
