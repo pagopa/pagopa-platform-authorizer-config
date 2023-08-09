@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.0.0"
+    tag: "0.0.1-1-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -32,9 +32,9 @@ microservice-chart:
     path: /authorizer-config/(.*)
   serviceAccount:
     create: false
-    annotations: { }
+    annotations: {}
     name: ""
-  podAnnotations: { }
+  podAnnotations: {}
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -82,8 +82,8 @@ microservice-chart:
   keyvault:
     name: "pagopa-d-shared-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: { }
-  tolerations: [ ]
+  nodeSelector: {}
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -108,7 +108,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-        tag: "0.0.0"
+        tag: "0.0.1-1-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
         pullPolicy: Always
-      envConfig: { }
-      envSecret: { }
+      envConfig: {}
+      envSecret: {}
