@@ -71,9 +71,14 @@ microservice-chart:
     OTEL_METRICS_EXPORTER: otlp
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
+    COSMOS_URI: "https://pagopa-u-weu-shared-auth-cosmos-account.documents.azure.com:443/"
+    REDIS_HOST: "pagopa-u-redis.redis.cache.windows.net"
+    REDIS_PORT: "6380"
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'
     OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
+    COSMOS_KEY: cosmos-authorizer-key
+    REDIS_PASSWORD: redis-password
   keyvault:
     name: "pagopa-u-shared-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
