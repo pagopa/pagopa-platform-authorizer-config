@@ -44,7 +44,6 @@ public class CachedAuthorizationController {
       summary = "Get cached authorizations",
       security = {
           @SecurityRequirement(name = "ApiKey"),
-          @SecurityRequirement(name = "Authorization")
       },
       tags = {"Cached Authorizations"})
   @ApiResponses(
@@ -77,10 +76,9 @@ public class CachedAuthorizationController {
   @Operation(
       summary = "Refresh cached authorizations by domain",
       security = {
-          @SecurityRequirement(name = "ApiKey"),
-          @SecurityRequirement(name = "Authorization")
+          @SecurityRequirement(name = "ApiKey")
       },
-      tags = { "Authorizations" })
+      tags = { "Cached Authorizations" })
   @ApiResponses(
       value = {
           @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema())),

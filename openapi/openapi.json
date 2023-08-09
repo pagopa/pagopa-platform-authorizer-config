@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "Parent pom providing dependency and plugin management for applications built with Maven",
+    "description" : "A microservice that provides a set of APIs to manage authorization records for the Authorizer system.",
     "termsOfService" : "https://www.pagopa.gov.it/",
     "title" : "platform-authorizer-config",
     "version" : "0.0.1"
@@ -136,8 +136,6 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Get authorization list",
         "tags" : [ "Authorizations" ]
@@ -253,8 +251,6 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Create new authorization",
         "tags" : [ "Authorizations" ]
@@ -356,8 +352,6 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Delete existing authorization",
         "tags" : [ "Authorizations" ]
@@ -464,8 +458,6 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Get authorization by identifier",
         "tags" : [ "Authorizations" ]
@@ -590,8 +582,6 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Update existing authorization",
         "tags" : [ "Authorizations" ]
@@ -699,8 +689,6 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Get cached authorizations",
         "tags" : [ "Cached Authorizations" ]
@@ -811,11 +799,9 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Refresh cached authorizations by domain",
-        "tags" : [ "Authorizations", "Cached Authorizations" ]
+        "tags" : [ "Cached Authorizations" ]
       }
     },
     "/info" : {
@@ -912,8 +898,6 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Return OK if application is started",
         "tags" : [ "Home" ]
@@ -932,7 +916,7 @@
         "operationId" : "getAuthorizations",
         "parameters" : [ {
           "description" : "The domain on which the authorizations will be filtered.",
-          "in" : "query",
+          "in" : "path",
           "name" : "domain",
           "required" : true,
           "schema" : {
@@ -1012,8 +996,6 @@
         },
         "security" : [ {
           "ApiKey" : [ ]
-        }, {
-          "Authorization" : [ ]
         } ],
         "summary" : "Get list of enrolled organizations",
         "tags" : [ "Enrolled Orgs" ]

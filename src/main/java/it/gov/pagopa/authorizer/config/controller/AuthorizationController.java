@@ -55,8 +55,7 @@ public class AuthorizationController {
   @Operation(
       summary = "Get authorization list",
       security = {
-          @SecurityRequirement(name = "ApiKey"),
-          @SecurityRequirement(name = "Authorization")
+          @SecurityRequirement(name = "ApiKey")
       },
       tags = { "Authorizations" })
   @ApiResponses(
@@ -89,8 +88,7 @@ public class AuthorizationController {
   @Operation(
       summary = "Get authorization by identifier",
       security = {
-          @SecurityRequirement(name = "ApiKey"),
-          @SecurityRequirement(name = "Authorization")
+          @SecurityRequirement(name = "ApiKey")
       },
       tags = { "Authorizations" })
   @ApiResponses(
@@ -118,8 +116,7 @@ public class AuthorizationController {
   @Operation(
       summary = "Create new authorization",
       security = {
-          @SecurityRequirement(name = "ApiKey"),
-          @SecurityRequirement(name = "Authorization")
+          @SecurityRequirement(name = "ApiKey")
       },
       tags = { "Authorizations" })
   @ApiResponses(
@@ -146,8 +143,7 @@ public class AuthorizationController {
   @Operation(
       summary = "Update existing authorization",
       security = {
-          @SecurityRequirement(name = "ApiKey"),
-          @SecurityRequirement(name = "Authorization")
+          @SecurityRequirement(name = "ApiKey")
       },
       tags = { "Authorizations" })
   @ApiResponses(
@@ -177,8 +173,7 @@ public class AuthorizationController {
   @Operation(
       summary = "Delete existing authorization",
       security = {
-          @SecurityRequirement(name = "ApiKey"),
-          @SecurityRequirement(name = "Authorization")
+          @SecurityRequirement(name = "ApiKey")
       },
       tags = { "Authorizations" })
   @ApiResponses(
