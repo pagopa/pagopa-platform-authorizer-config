@@ -76,7 +76,7 @@ microservice-chart:
     REDIS_PORT: "6380"
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-p-connection-string'
-    OTEL_EXPORTER_OTLP_HEADERS: elastic-auth-header
+    OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
     COSMOS_KEY: auth-p-cosmos-key
     REDIS_PASSWORD: redis-password
   keyvault:
