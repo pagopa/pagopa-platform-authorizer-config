@@ -54,14 +54,14 @@ public class AuthorizationService {
   }
 
   public Authorization getAuthorization(@NotNull String authorizationId) {
-    SubscriptionKeyDomain entity = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.AUTHORIZATION_NOT_FOUND, authorizationId));
+    SubscriptionKeyDomain entity = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, authorizationId));
     return modelMapper.map(entity, Authorization.class);
   }
 
   public Authorization createAuthorization(@NotNull Authorization authorization) {
     // check if another authorization for the same pair domain-subkey already exists
     if (!authorizationRepository.findByDomainAndSubscriptionKey(authorization.getDomain(), authorization.getSubscriptionKey()).isEmpty()) {
-      throw new AppException(AppError.AUTHORIZATION_CONFLICT, authorization.getDomain(), authorization.getSubscriptionKey());
+      throw new AppException(AppError.CONFLICT_AUTHORIZATION_ALREADY_EXISTENT, authorization.getDomain(), authorization.getSubscriptionKey());
     }
     // mapping the entity to be saved and update the dates
     SubscriptionKeyDomain subscriptionKeyDomain = modelMapper.map(authorization, SubscriptionKeyDomain.class);
@@ -81,7 +81,7 @@ public class AuthorizationService {
 
   public Authorization updateAuthorization(@NotNull String authorizationId, @NotNull Authorization authorization) {
     // check if the authorization with the ID already exists
-    SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.AUTHORIZATION_NOT_FOUND, authorizationId));
+    SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, authorizationId));
     if (!existingSubscriptionKeyDomain.getDomain().equals(authorization.getDomain()) || !existingSubscriptionKeyDomain.getSubkey().equals(authorization.getSubscriptionKey())) {
       throw new AppException(AppError.BAD_REQUEST_CHANGED_DOMAIN_OR_SUBKEY);
     }
@@ -102,7 +102,7 @@ public class AuthorizationService {
   }
 
   public void deleteAuthorization(@NotNull String authorizationId) {
-    SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.AUTHORIZATION_NOT_FOUND, authorizationId));
+    SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, authorizationId));
     String domain = existingSubscriptionKeyDomain.getDomain();
     String subscriptionKey = existingSubscriptionKeyDomain.getSubkey();
     authorizationRepository.delete(existingSubscriptionKeyDomain);
