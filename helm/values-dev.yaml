@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.0.1-13-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
+    tag: "0.0.1-14-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -112,7 +112,7 @@ microservice-chart:
       create: false
       image:
         repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-        tag: "0.0.1-13-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
+        tag: "0.0.1-14-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
