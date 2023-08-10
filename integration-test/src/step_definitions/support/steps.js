@@ -1,31 +1,52 @@
-const {Given, When, Then} = require('@cucumber/cucumber')
-const assert = require("assert");
-const {call, post} = require("./common");
-const fs = require("fs");
+const { After, Before, Given, setDefaultTimeout, Then, When } = require('@cucumber/cucumber');
+const { 
+    assertStatusCodeEquals, 
+    executeAfterAllStep,
+    generateAuthorization,
+    executeGetEnrolledECInvocation,
+    executeGetEnrolledStationsForECInvocation,
+    assertResponseWithEnrolledCI,
+    assertResponseWithEnrolledStations
+} = require('./logic/common_logic');
 
-let rawdata = fs.readFileSync('./config/properties.json');
-let properties = JSON.parse(rawdata);
-const app_host = properties.app_host;
 
-let body;
-let responseToCheck;
+/* Setting defaul timeout to 30s. */
+setDefaultTimeout(30 * 1000);
 
-Given(/^initial json$/, function (payload) {
-  body = JSON.parse(payload);
+let bundle = {
+    authorization_id: undefined,
+    domain: undefined,
+    response: undefined
+}
+
+/* 
+ *  'Given' preconditions
+ */
+Given('an authorization on entity {string} for the domain {string} related to subscription key "A" is added in the database', (entity, domain) => generateAuthorization(entity, domain, bundle));
+
+/*
+ *  'When' operations
+ */
+When('the client execute a call for the domain {string}', (domain) => executeGetEnrolledECInvocation(domain, bundle));
+When('the client execute a call for the domain {string} for entity {creditorInstitutionCode}', (domain, creditorInstitutionCode) => executeGetEnrolledStationsForECInvocation(domain, creditorInstitutionCode, bundle));
+
+/*
+ *  'Then' postconditions
+ */
+Then('the client receives status code {int}', (statusCode) => assertStatusCodeEquals(bundle.response, statusCode));
+Then('the client receives an object with enrolled station for creditor institution', () => assertResponseWithEnrolledStations(bundle.response));
+Then('the client receives an object with enrolled creditor institutions', () => assertResponseWithEnrolledCI(bundle.response));
+
+
+Before(function(scenario) {
+    const header = `| Starting scenario "${scenario.pickle.name}" |`;
+    let separator = "-".repeat(header.length);
+    console.log(`\n${separator}`);
+    console.log(`${header}`);
+    console.log(`${separator}`);
 });
 
-When(/^the client send (GET|POST|PUT|DELETE) to (.*)$/,
-    async function (method, url) {
-      responseToCheck = await call(method, afm_host + url, body)
-    });
-
-Then(/^check statusCode is (\d+)$/, function (status) {
-  assert.strictEqual(responseToCheck.status, status);
-
-});
-
-Then(/^check response body is$/, function (payload) {
-  console.log(responseToCheck.data)
-
-  assert.deepStrictEqual(responseToCheck.data, JSON.parse(payload));
+After(() => {
+    console.log(`\n\n--[Clear all created entities]--`);
+    executeAfterAllStep(bundle);
 });
