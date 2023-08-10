@@ -20,28 +20,33 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 class OpenApiGenerationTest {
 
+  private static final String[][] apiDocsGroups = {
+      { "core", "/v3/api-docs/crud"},
+      { "enrolledci", "/v3/api-docs/enrolled_ci" }
+  };
+
   @Autowired ObjectMapper objectMapper;
 
   @Autowired private MockMvc mvc;
 
   @Test
   void swaggerSpringPlugin() throws Exception {
-    mvc.perform(MockMvcRequestBuilders.get("/v3/api-docs").accept(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-        .andDo(
-            (result) -> {
-              assertNotNull(result);
-              assertNotNull(result.getResponse());
-              final String content = result.getResponse().getContentAsString();
-              assertFalse(content.isBlank());
-              assertFalse(content.contains("${"), "Generated swagger contains placeholders");
-              Object swagger =
-                  objectMapper.readValue(result.getResponse().getContentAsString(), Object.class);
-              String formatted =
-                  objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(swagger);
-              Path basePath = Paths.get("openapi/");
-              Files.createDirectories(basePath);
-              Files.write(basePath.resolve("openapi.json"), formatted.getBytes());
-            });
+    for (String[] apiDocs : apiDocsGroups) {
+      mvc.perform(MockMvcRequestBuilders.get(apiDocs[1]).accept(MediaType.APPLICATION_JSON))
+          .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+          .andDo(
+              (result) -> {
+                assertNotNull(result);
+                assertNotNull(result.getResponse());
+                final String content = result.getResponse().getContentAsString();
+                assertFalse(content.isBlank());
+                assertFalse(content.contains("${"), "Generated swagger contains placeholders");
+                Object swagger = objectMapper.readValue(result.getResponse().getContentAsString(), Object.class);
+                String formatted = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(swagger);
+                Path basePath = Paths.get("openapi/");
+                Files.createDirectories(basePath);
+                Files.write(basePath.resolve(String.format("openapi_%s.json", apiDocs[0])), formatted.getBytes());
+              });
+    }
   }
 }
