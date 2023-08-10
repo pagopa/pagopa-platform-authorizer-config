@@ -65,10 +65,9 @@ microservice-chart:
     APP_LOGGING_LEVEL: 'DEBUG'
     DEFAULT_LOGGING_LEVEL: 'INFO'
     ENABLE_ECS_CONSOLE: "true"
+    OTEL_SERVICE_NAME: "pagopa-platform-authorizer-config"
     OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopaplatformauthorizerconfigotl,deployment.environment=dev"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
-    OTEL_TRACES_EXPORTER: otlp
-    OTEL_METRICS_EXPORTER: otlp
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     COSMOS_URI: "https://pagopa-d-weu-shared-auth-cosmos-account.documents.azure.com:443/"

@@ -134,6 +134,16 @@
       <artifactId>logback-ecs-encoder</artifactId>
       <version>1.5.0</version>
     </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-access</artifactId>
+      <version>1.4.7</version>
+    </dependency>
   </dependencies>
 
   <build>

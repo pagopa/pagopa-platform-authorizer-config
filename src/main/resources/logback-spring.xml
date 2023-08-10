@@ -23,7 +23,14 @@
         <springProperty name="ECS_SERVICE_NAME" source="info.application.name"/>
         <springProperty name="ENV" source="info.properties.environment"/>
         <appender name="ECS_JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <filter class="it.gov.pagopa.authorizer.config.util.logging.IgnoreProbes"/>
+            <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+                <evaluator class="ch.qos.logback.access.net.URLEvaluator">
+                    <URL>/actuator/health/liveness</URL>
+                    <URL>/actuator/health/readiness</URL>
+                </evaluator>
+                <OnMismatch>NEUTRAL</OnMismatch>
+                <OnMatch>DENY</OnMatch>
+            </filter>
             <encoder class="it.gov.pagopa.authorizer.config.util.logging.EcsEncoder">
                 <serviceName>${ECS_SERVICE_NAME}</serviceName>
                 <serviceVersion>${ECS_SERVICE_VERSION}</serviceVersion>
