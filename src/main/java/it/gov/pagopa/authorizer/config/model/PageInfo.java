@@ -12,6 +12,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -19,25 +21,25 @@ import lombok.ToString;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PageInfo {
+public class PageInfo implements Serializable {
 
   @JsonProperty("page")
-  @Schema(description = "Page number", required = true)
   @PositiveOrZero
+  @Schema(description = "The page number", requiredMode = Schema.RequiredMode.REQUIRED)
   Integer page;
 
   @JsonProperty("limit")
-  @Schema(description = "Required number of items per page", required = true)
   @Positive
+  @Schema(description = "The required maximum number of items per page", requiredMode = Schema.RequiredMode.REQUIRED)
   Integer limit;
 
   @JsonProperty("items_found")
-  @Schema(description = "Number of items found. (The last page may have fewer elements than required)", required = true)
   @PositiveOrZero
+  @Schema(description = "The number of items found. (The last page may have fewer elements than required)", requiredMode = Schema.RequiredMode.REQUIRED)
   Integer itemsFound;
 
   @JsonProperty("total_pages")
-  @Schema(description = "Total number of pages", required = true)
   @PositiveOrZero
+  @Schema(description = "The total number of pages", requiredMode = Schema.RequiredMode.REQUIRED)
   Integer totalPages;
 }

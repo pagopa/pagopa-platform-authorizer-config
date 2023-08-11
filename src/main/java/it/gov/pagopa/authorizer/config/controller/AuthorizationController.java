@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.gov.pagopa.authorizer.config.model.ProblemJson;
 import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
-import it.gov.pagopa.authorizer.config.model.authorization.Authorizations;
+import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationList;
 import it.gov.pagopa.authorizer.config.service.AuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -60,14 +60,14 @@ public class AuthorizationController {
       tags = { "Authorizations" })
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Authorizations.class))),
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationList.class))),
           @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
       })
   @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Authorizations> getAuthorizations(
+  public ResponseEntity<AuthorizationList> getAuthorizations(
       @Parameter(description = "The domain on which the authorizations will be filtered.", required = true)
       @NotBlank @RequestParam("domain") String domain,
       @Parameter(description = "The identifier of the authorizations' owner.")
@@ -93,7 +93,7 @@ public class AuthorizationController {
       tags = { "Authorizations" })
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Authorizations.class))),
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationList.class))),
           @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
@@ -121,7 +121,7 @@ public class AuthorizationController {
       tags = { "Authorizations" })
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Authorizations.class))),
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationList.class))),
           @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
@@ -148,7 +148,7 @@ public class AuthorizationController {
       tags = { "Authorizations" })
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Authorizations.class))),
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationList.class))),
           @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
           @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +23,10 @@ import lombok.ToString;
 public class CIAssociatedCodeList {
 
     @JsonProperty("used")
+    @Schema(description = "The list of creditor institution's codes, associated to used stations or to other entities.", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<CIAssociatedCode> usedCodes;
 
     @JsonProperty("unused")
+    @Schema(description = "The list of creditor institution's codes, not associated yet to used stations or to other entities.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private List<CIAssociatedCode> unusedCodes;
 }

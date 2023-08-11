@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.gov.pagopa.authorizer.config.validation.annotation.MutuallyExclusiveFields;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,11 +29,14 @@ public class AuthorizationEntity implements Serializable {
 
   @JsonProperty("name")
   @NotBlank
+  @Schema(description = "The name or the description associated to the authorization entity in order to reference it in a more human-readable mode.", requiredMode = Schema.RequiredMode.REQUIRED)
   private String name;
 
   @JsonProperty("value")
+  @Schema(description = "The single simple value related to an entity to be authorized to access within an authorization. Only one between 'value' and 'values' tag at a time can exists in this object.", requiredMode = Schema.RequiredMode.REQUIRED)
   private String value;
 
   @JsonProperty("values")
+  @Schema(description = "The multiple composite sub-values which concatenation forms a complex entity to be authorized to access within an authorization. Only one between 'value' and 'values' tag at a time can exists in this object.", requiredMode = Schema.RequiredMode.REQUIRED)
   private List<@NotBlank String> values;
 }

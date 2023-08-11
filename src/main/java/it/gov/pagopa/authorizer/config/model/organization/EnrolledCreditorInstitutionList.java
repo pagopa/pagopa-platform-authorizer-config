@@ -3,13 +3,11 @@ package it.gov.pagopa.authorizer.config.model.organization;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -18,9 +16,10 @@ import javax.validation.constraints.NotNull;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EnrolledCreditorInstitutionStations {
+public class EnrolledCreditorInstitutionList {
 
-    @JsonProperty("stations")
+    @JsonProperty("creditor_institutions")
     @NotNull
-    private List<EnrolledCreditorInstitutionStation> stations;
+    @Schema(description = "The list of creditor institution enrolled to the Authorizer service.", requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<EnrolledCreditorInstitution> creditorInstitutions;
 }
