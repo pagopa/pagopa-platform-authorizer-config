@@ -1,7 +1,12 @@
 package it.gov.pagopa.authorizer.config.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.authorizer.config.entity.AuthorizedEntity;
+import it.gov.pagopa.authorizer.config.entity.GenericPair;
+import it.gov.pagopa.authorizer.config.entity.Metadata;
+import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
 import it.gov.pagopa.authorizer.config.model.PageInfo;
 import it.gov.pagopa.authorizer.config.model.authorization.*;
 import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorization;
@@ -10,22 +15,66 @@ import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstit
 import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionList;
 import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionStation;
 import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionStationList;
+import lombok.experimental.UtilityClass;
+import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class MockBuilder {
+import static org.mockito.Mockito.when;
 
-    private MockBuilder() {}
+@UtilityClass
+public class TestUtil {
 
+    public <T> Page<T> mockPage(List<T> content, int limit, int pageNumber) {
+        @SuppressWarnings("unchecked")
+        Page<T> page = Mockito.mock(Page.class);
+        when(page.getTotalPages()).thenReturn((int) Math.ceil((double) content.size() / limit));
+        when(page.getNumberOfElements()).thenReturn(content.size());
+        when(page.getNumber()).thenReturn(pageNumber);
+        when(page.getSize()).thenReturn(limit);
+        when(page.getContent()).thenReturn(content);
+        when(page.stream()).thenReturn(content.stream());
+        return page;
+    }
+
+    /**
+     * @param object to map into the Json string
+     * @return object as Json string
+     * @throws JsonProcessingException if there is an error during the parsing of the object
+     */
     public static String toJson(Object object) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(object);
     }
 
-    public static AuthorizationList getAuthorizations(String domain, String ownerId) {
+    /**
+     * @param relativePath Path from source root of the json file
+     * @return the Json string read from the file
+     * @throws IOException if an I/O error occurs reading from the file or a malformed or unmappable
+     *     byte sequence is read
+     */
+    public String readJsonFromFile(String relativePath) throws IOException {
+        ClassLoader classLoader = TestUtil.class.getClassLoader();
+        File file = new File(Objects.requireNonNull(classLoader.getResource(relativePath)).getPath());
+        return Files.readString(file.toPath());
+    }
+
+    public <T> T getObjectFromFile(Class<T> clazz, String relativePath) throws IOException {
+        return new ObjectMapper().readValue(readJsonFromFile(relativePath), clazz);
+    }
+    public <T> T getObjectFromFile(TypeReference<T> clazz, String relativePath) throws IOException {
+        return new ObjectMapper().readValue(readJsonFromFile(relativePath), clazz);
+    }
+
+    public AuthorizationList getAuthorizations(String domain, String ownerId) {
         return AuthorizationList.builder()
                 .authorizations(IntStream.rangeClosed(1, 5)
                         .mapToObj(order -> getAuthorization(order, "uuid-" + order, domain, ownerId))
@@ -39,7 +88,7 @@ public class MockBuilder {
                 .build();
     }
 
-    public static Authorization getAuthorization(int order, String id, String domain, String ownerId) {
+    public Authorization getAuthorization(int order, String id, String domain, String ownerId) {
         return Authorization.builder()
                 .id(id)
                 .domain(domain)
@@ -91,7 +140,7 @@ public class MockBuilder {
                 .build();
     }
 
-    public static CachedAuthorizationList getCachedAuthorizationList(String domain, String ownerId, boolean formatTTL) {
+    public CachedAuthorizationList getCachedAuthorizationList(String domain, String ownerId, boolean formatTTL) {
         List<CachedAuthorization> cachedAuthorizations = new ArrayList<>();
         cachedAuthorizations.add(getCachedAuthorization(
                 String.format("Locking state for domain %s (remaining time before unlocking automatic refresh)", domain),
@@ -107,7 +156,7 @@ public class MockBuilder {
                 .build();
     }
 
-    public static CachedAuthorization getCachedAuthorization(String description, String ownerId, String ttl) {
+    public CachedAuthorization getCachedAuthorization(String description, String ownerId, String ttl) {
         return CachedAuthorization.builder()
                 .description(description)
                 .owner(ownerId)
@@ -116,7 +165,7 @@ public class MockBuilder {
                 .build();
     }
 
-    public static EnrolledCreditorInstitutionList getEnrolledCreditorInstitutionList() {
+    public EnrolledCreditorInstitutionList getEnrolledCreditorInstitutionList() {
         return EnrolledCreditorInstitutionList.builder()
                 .creditorInstitutions(List.of(
                         EnrolledCreditorInstitution.builder()
@@ -131,7 +180,7 @@ public class MockBuilder {
                 .build();
     }
 
-    public static EnrolledCreditorInstitutionStationList getEnrolledCreditorInstitutionStationList() {
+    public EnrolledCreditorInstitutionStationList getEnrolledCreditorInstitutionStationList() {
         return EnrolledCreditorInstitutionStationList.builder()
                 .stations(List.of(
                         EnrolledCreditorInstitutionStation.builder()
@@ -147,5 +196,72 @@ public class MockBuilder {
                                 .segregationCode("03")
                                 .build()))
                 .build();
+    }
+
+    public List<SubscriptionKeyDomain> getSubscriptionKeyDomains(String domain, String ownerId) {
+        return IntStream.rangeClosed(0, 5)
+                .mapToObj(order -> getSubscriptionKeyDomain(order, "uuid-" + order, domain, ownerId))
+                .collect(Collectors.toList());
+    }
+
+    public SubscriptionKeyDomain getSubscriptionKeyDomain(int order, String id, String domain, String ownerId) {
+        return SubscriptionKeyDomain.builder()
+                .id(id)
+                .domain(domain)
+                .subkey("subkey-" + order)
+                .description("Authorization number " + order)
+                .ownerId(Optional.ofNullable(ownerId).orElse("default-owner-id"))
+                .ownerName("Owner-" + Optional.ofNullable(ownerId).orElse("default-owner-id"))
+                .ownerType("CI")
+                .authorizedEntities(List.of(getAuthorizedEntity(order)))
+                .otherMetadata(List.of(
+                        Metadata.builder()
+                                .name("Appearance")
+                                .shortKey("_app")
+                                .content(List.of(
+                                        GenericPair.builder()
+                                                .key("color")
+                                                .value("green")
+                                                .build(),
+                                        GenericPair.builder()
+                                                .key("font")
+                                                .value(String.valueOf(order))
+                                                .build()))
+                                .build(),
+                        Metadata.builder()
+                                .name("Language keywords")
+                                .shortKey("_kwd")
+                                .content(List.of(
+                                        GenericPair.builder()
+                                                .key("some-new-futuristic-language")
+                                                .values(List.of("MOVE" + order, "DIV" + order, "->"))
+                                                .build()))
+                                .build()
+                ))
+                .insertedAt("2023-01-01 12:00:00")
+                .lastUpdate("2023-06-01 20:00:00")
+                .lastForcedRefresh("2023-12-01 08:00:00")
+                .build();
+    }
+
+    private AuthorizedEntity getAuthorizedEntity(int order) {
+        AuthorizedEntity result;
+        if (order == 0) {
+            result = AuthorizedEntity.builder()
+                    .name("entity-name-all")
+                    .value("*")
+                    .build();
+        } else if (order % 2 == 0) {
+            result = AuthorizedEntity.builder()
+                    .name("entity-name-" + order)
+                    .value("entity" + order)
+                    .build();
+        } else {
+            result = AuthorizedEntity.builder()
+                    .name("entity-name-" + order)
+                    .values(List.of("entity", "complex" + order))
+                    .build();
+        }
+        return result;
     }
 }

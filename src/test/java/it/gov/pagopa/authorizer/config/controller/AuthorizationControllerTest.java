@@ -3,11 +3,9 @@ package it.gov.pagopa.authorizer.config.controller;
 import it.gov.pagopa.authorizer.config.Application;
 import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
-import it.gov.pagopa.authorizer.config.model.PageInfo;
 import it.gov.pagopa.authorizer.config.model.authorization.*;
 import it.gov.pagopa.authorizer.config.service.AuthorizationService;
-import it.gov.pagopa.authorizer.config.util.CommonUtil;
-import it.gov.pagopa.authorizer.config.util.MockBuilder;
+import it.gov.pagopa.authorizer.config.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -19,12 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -50,7 +42,7 @@ class AuthorizationControllerTest {
     String url = String.format("/authorizations?page=0&limit=50&domain=%s&ownerId=%s", domain, ownerId == null ? "" : ownerId);
     // mocking invocation
     when(authorizationService.getAuthorizations(anyString(), anyString(), any(Pageable.class)))
-            .thenReturn(MockBuilder.getAuthorizations(domain, ownerId));
+            .thenReturn(TestUtil.getAuthorizations(domain, ownerId));
     // executing API call
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -63,7 +55,7 @@ class AuthorizationControllerTest {
     String url = String.format("/authorizations/%s", id);
     // mocking invocation
     when(authorizationService.getAuthorization(anyString()))
-            .thenReturn(MockBuilder.getAuthorization(0, id, "some-domain", "some-owner"));
+            .thenReturn(TestUtil.getAuthorization(0, id, "some-domain", "some-owner"));
     // executing API call
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -87,11 +79,11 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = "/authorizations/";
     // mocking invocation
-    Authorization mockedResource = MockBuilder.getAuthorization(0, id, "some-domain", "some-owner");
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
     when(authorizationService.createAuthorization(any(Authorization.class)))
             .thenReturn(mockedResource);
     // executing API call
-    String request = MockBuilder.toJson(mockedResource);
+    String request = TestUtil.toJson(mockedResource);
     mvc.perform(post(url).content(request).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -102,10 +94,10 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = "/authorizations/";
     // mocking invocation
-    Authorization mockedResource = MockBuilder.getAuthorization(0, id, "some-domain", "some-owner");
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
     when(authorizationService.createAuthorization(any(Authorization.class))).thenThrow(new AppException(HttpStatus.BAD_REQUEST, "Bad Request", "Some validation error"));
     // executing API call
-    String request = MockBuilder.toJson(mockedResource);
+    String request = TestUtil.toJson(mockedResource);
     mvc.perform(post(url).content(request).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -116,10 +108,10 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = "/authorizations/";
     // mocking invocation
-    Authorization mockedResource = MockBuilder.getAuthorization(0, id, "some-domain", "some-owner");
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
     when(authorizationService.createAuthorization(any(Authorization.class))).thenThrow(new AppException(AppError.CONFLICT_AUTHORIZATION_ALREADY_EXISTENT, "", ""));
     // executing API call
-    String request = MockBuilder.toJson(mockedResource);
+    String request = TestUtil.toJson(mockedResource);
     mvc.perform(post(url).content(request).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isConflict())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -130,10 +122,10 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = "/authorizations/";
     // mocking invocation
-    Authorization mockedResource = MockBuilder.getAuthorization(0, id, "some-domain", "some-owner");
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
     when(authorizationService.createAuthorization(any(Authorization.class))).thenThrow(new AppException(AppError.INTERNAL_SERVER_ERROR, "", ""));
     // executing API call
-    String request = MockBuilder.toJson(mockedResource);
+    String request = TestUtil.toJson(mockedResource);
     mvc.perform(post(url).content(request).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -144,11 +136,11 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = String.format("/authorizations/%s", id);
     // mocking invocation
-    Authorization mockedResource = MockBuilder.getAuthorization(0, id, "some-domain", "some-owner");
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
     when(authorizationService.updateAuthorization(anyString(), any(Authorization.class)))
             .thenReturn(mockedResource);
     // executing API call
-    String request = MockBuilder.toJson(mockedResource);
+    String request = TestUtil.toJson(mockedResource);
     mvc.perform(put(url).content(request).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -159,10 +151,10 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = String.format("/authorizations/%s", id);
     // mocking invocation
-    Authorization mockedResource = MockBuilder.getAuthorization(0, id, "some-domain", "some-owner");
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
     when(authorizationService.updateAuthorization(anyString(), any(Authorization.class))).thenThrow(new AppException(HttpStatus.BAD_REQUEST, "Bad Request", "Some validation error"));
     // executing API call
-    String request = MockBuilder.toJson(mockedResource);
+    String request = TestUtil.toJson(mockedResource);
     mvc.perform(put(url).content(request).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -173,10 +165,10 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = String.format("/authorizations/%s", id);
     // mocking invocation
-    Authorization mockedResource = MockBuilder.getAuthorization(0, id, "some-domain", "some-owner");
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
     when(authorizationService.updateAuthorization(anyString(), any(Authorization.class))).thenThrow(new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, id));
     // executing API call
-    String request = MockBuilder.toJson(mockedResource);
+    String request = TestUtil.toJson(mockedResource);
     mvc.perform(put(url).content(request).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -187,10 +179,10 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = String.format("/authorizations/%s", id);
     // mocking invocation
-    Authorization mockedResource = MockBuilder.getAuthorization(0, id, "some-domain", "some-owner");
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
     when(authorizationService.updateAuthorization(anyString(), any(Authorization.class))).thenThrow(new AppException(AppError.INTERNAL_SERVER_ERROR, "", ""));
     // executing API call
-    String request = MockBuilder.toJson(mockedResource);
+    String request = TestUtil.toJson(mockedResource);
     mvc.perform(put(url).content(request).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));

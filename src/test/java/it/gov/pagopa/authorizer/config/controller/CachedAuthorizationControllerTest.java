@@ -4,7 +4,7 @@ import it.gov.pagopa.authorizer.config.Application;
 import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
 import it.gov.pagopa.authorizer.config.service.AuthorizationService;
-import it.gov.pagopa.authorizer.config.util.MockBuilder;
+import it.gov.pagopa.authorizer.config.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -44,7 +44,7 @@ class CachedAuthorizationControllerTest {
         String url = String.format("/cachedauthorizations?domain=%s&ownerId=%s&formatTTL=%s", domain, ownerId == null ? "" : ownerId, formatTTL == null ? "" : formatTTL);
         // mocking invocation
         when(authorizationService.getCachedAuthorization(anyString(), anyString(), anyBoolean()))
-                .thenReturn(MockBuilder.getCachedAuthorizationList(domain, ownerId, formatTTL == null || formatTTL));
+                .thenReturn(TestUtil.getCachedAuthorizationList(domain, ownerId, formatTTL == null || formatTTL));
         // executing API call
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

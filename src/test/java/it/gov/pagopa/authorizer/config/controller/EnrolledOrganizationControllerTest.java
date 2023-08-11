@@ -4,7 +4,7 @@ import it.gov.pagopa.authorizer.config.Application;
 import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
 import it.gov.pagopa.authorizer.config.service.EnrolledOrganizationService;
-import it.gov.pagopa.authorizer.config.util.MockBuilder;
+import it.gov.pagopa.authorizer.config.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,7 +34,7 @@ class EnrolledOrganizationControllerTest {
         String url = "/organizations/domains/fakedomain";
         // mocking invocation
         when(enrolledOrganizationService.getEnrolledOrganizations(anyString()))
-                .thenReturn(MockBuilder.getEnrolledCreditorInstitutionList());
+                .thenReturn(TestUtil.getEnrolledCreditorInstitutionList());
         // executing API call
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -58,7 +58,7 @@ class EnrolledOrganizationControllerTest {
         String url = "/organizations/77777777777/domains/fakedomain";
         // mocking invocation
         when(enrolledOrganizationService.getStationsForEnrolledOrganizations(anyString(), anyString()))
-                .thenReturn(MockBuilder.getEnrolledCreditorInstitutionStationList());
+                .thenReturn(TestUtil.getEnrolledCreditorInstitutionStationList());
         // executing API call
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
