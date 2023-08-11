@@ -59,8 +59,8 @@ public class CachedAuthorizationController {
       @Parameter(description = "The identifier of the authorizations' owner.")
       @RequestParam(value = "ownerId", required = false) String ownerId,
       @Parameter(description = "The identifier of the authorizations' owner.")
-      @RequestParam(value = "formatTTL", required = false, defaultValue = "true") boolean formatTTL) {
-    return ResponseEntity.ok(authorizationService.getCachedAuthorization(domain, ownerId, formatTTL));
+      @RequestParam(value = "formatTTL", required = false, defaultValue = "true") Boolean formatTTL) {
+    return ResponseEntity.ok(authorizationService.getCachedAuthorization(domain, ownerId, formatTTL == null || formatTTL));
   }
 
 

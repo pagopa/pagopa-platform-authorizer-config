@@ -20,8 +20,9 @@ public enum AppError {
 
   CONFLICT_AUTHORIZATION_ALREADY_EXISTENT(HttpStatus.CONFLICT, "Authorization already existent", "An existent authorization was found with domain [%s] and subscription key [%s]."),
 
+  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "Something went wrong during elaboration."),
 
-  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "Something went wrong during elaboration.");
+  INTERNAL_SERVER_ERROR_REFRESH(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while refreshing the cached authorizations.");
 
   public final HttpStatus httpStatus;
   public final String title;

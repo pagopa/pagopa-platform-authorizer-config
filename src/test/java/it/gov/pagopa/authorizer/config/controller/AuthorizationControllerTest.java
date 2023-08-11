@@ -47,7 +47,7 @@ class AuthorizationControllerTest {
           "fakedomain,77777777777",
   })
   void getAuthorizations_200(String domain, String ownerId) throws Exception {
-    String url = String.format("/authorizations?page=0&limit=50&domain=%s&ownerId=%s", domain, ownerId);
+    String url = String.format("/authorizations?page=0&limit=50&domain=%s&ownerId=%s", domain, ownerId == null ? "" : ownerId);
     // mocking invocation
     when(authorizationService.getAuthorizations(anyString(), anyString(), any(Pageable.class)))
             .thenReturn(MockBuilder.getAuthorizations(domain, ownerId));

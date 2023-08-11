@@ -141,6 +141,11 @@ public class AuthorizationService {
     for (SubscriptionKeyDomain entity : entities) {
       entity.setLastForcedRefresh(now);
     }
-    authorizationRepository.saveAll(entities);
+    try {
+      authorizationRepository.saveAll(entities);
+    } catch (DataAccessException e) {
+      log.error("An error occurred while refreshing cached authorizations. ", e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH);
+    }
   }
 }
