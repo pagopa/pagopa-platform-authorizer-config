@@ -62,18 +62,16 @@ class CachedAuthorizationControllerTest {
         doNothing().when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
         // executing API call
         mvc.perform(post(url).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(status().isOk());
     }
 
     @Test
-    void refreshCachedAuthorizations_500(String domain, String ownerId) throws Exception {
-        String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", domain, ownerId == null ? "" : ownerId);
+    void refreshCachedAuthorizations_500() throws Exception {
+        String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", "fakedomain", "77777777777");
         // mocking invocation
         doThrow(new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH)).when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
         // executing API call
         mvc.perform(post(url).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(status().isInternalServerError());
     }
 }

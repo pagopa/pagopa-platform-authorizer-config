@@ -92,24 +92,19 @@ public class EnrolledOrganizationService {
         .sum();
     boolean isCICorrectlyEnrolled = count != 0;
     log.info(String.format("Is CI with ID [%s] enrolled to domain [%s]? [%s].", organizationFiscalCode, domain, isCICorrectlyEnrolled));
-
-    List<EnrolledCreditorInstitutionStation> enrolledCreditorInstitutionStations;
     if (!isCICorrectlyEnrolled) {
       throw new AppException(AppError.NOT_FOUND_CI_NOT_ENROLLED, organizationFiscalCode, domain);
     }
-
+    List<EnrolledCreditorInstitutionStation> enrolledCreditorInstitutionStations;
     try {
       enrolledCreditorInstitutionStations = getStationsFromEnrolledCI(organizationFiscalCode, domain);
     } catch (HttpClientErrorException e) {
       log.error("Error during communication with APIConfig for station retrieving. ", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, "Communication error", "Error during communication with APIConfig for station retrieving.");
     }
-
     if (enrolledCreditorInstitutionStations.isEmpty()) {
       throw new AppException(AppError.NOT_FOUND_NO_VALID_STATION, organizationFiscalCode, domain);
     }
-
-
     return EnrolledCreditorInstitutionStationList.builder()
         .stations(enrolledCreditorInstitutionStations)
         .build();

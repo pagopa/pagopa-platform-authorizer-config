@@ -6,6 +6,10 @@ import it.gov.pagopa.authorizer.config.model.PageInfo;
 import it.gov.pagopa.authorizer.config.model.authorization.*;
 import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorization;
 import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorizationList;
+import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitution;
+import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionList;
+import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionStation;
+import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionStationList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +113,39 @@ public class MockBuilder {
                 .owner(ownerId)
                 .subscriptionKey("sub-key-" + ownerId)
                 .ttl(ttl)
+                .build();
+    }
+
+    public static EnrolledCreditorInstitutionList getEnrolledCreditorInstitutionList() {
+        return EnrolledCreditorInstitutionList.builder()
+                .creditorInstitutions(List.of(
+                        EnrolledCreditorInstitution.builder()
+                                .organizationFiscalCode("organization1")
+                                .segregationCodes(List.of("01", "02"))
+                                .build(),
+                        EnrolledCreditorInstitution.builder()
+                                .organizationFiscalCode("organization2")
+                                .segregationCodes(List.of("03"))
+                                .build()
+                ))
+                .build();
+    }
+
+    public static EnrolledCreditorInstitutionStationList getEnrolledCreditorInstitutionStationList() {
+        return EnrolledCreditorInstitutionStationList.builder()
+                .stations(List.of(
+                        EnrolledCreditorInstitutionStation.builder()
+                                .stationId("station1")
+                                .segregationCode("01")
+                                .build(),
+                        EnrolledCreditorInstitutionStation.builder()
+                                .stationId("station2")
+                                .segregationCode("02")
+                                .build(),
+                        EnrolledCreditorInstitutionStation.builder()
+                                .stationId("station3")
+                                .segregationCode("03")
+                                .build()))
                 .build();
     }
 }
