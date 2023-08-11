@@ -1,6 +1,5 @@
 package it.gov.pagopa.authorizer.config.validation.validator;
 
-import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.validation.annotation.MutuallyExclusiveFields;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 import javax.validation.ConstraintValidator;

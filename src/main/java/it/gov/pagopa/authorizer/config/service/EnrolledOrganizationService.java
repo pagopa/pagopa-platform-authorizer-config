@@ -9,8 +9,8 @@ import it.gov.pagopa.authorizer.config.model.organization.CIAssociatedCode;
 import it.gov.pagopa.authorizer.config.model.organization.CIAssociatedCodeList;
 import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitution;
 import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionStation;
-import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionStations;
-import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutions;
+import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionStationList;
+import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionList;
 import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
 import it.gov.pagopa.authorizer.config.util.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +48,7 @@ public class EnrolledOrganizationService {
   @Qualifier("apiconfigSelfcareClient")
   private WebClient apiconfigSelfcareClient;
 
-  public EnrolledCreditorInstitutions getEnrolledOrganizations(@NotNull String domain) {
+  public EnrolledCreditorInstitutionList getEnrolledOrganizations(@NotNull String domain) {
     List<SubscriptionKeyDomain> subscriptionKeyDomains = authorizationRepository.findByDomain(domain);
 
     List<String> distinctEnrolledCIs = subscriptionKeyDomains.stream()
@@ -72,12 +72,12 @@ public class EnrolledOrganizationService {
       log.error("Error during communication with APIConfig for segregation codes retrieving. ", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, "Communication error", "Error during communication with APIConfig for segregation codes retrieving.");
     }
-    return EnrolledCreditorInstitutions.builder()
+    return EnrolledCreditorInstitutionList.builder()
         .creditorInstitutions(enrolledCreditorInstitutions)
         .build();
   }
 
-  public EnrolledCreditorInstitutionStations getStationsForEnrolledOrganizations(@NotNull String organizationFiscalCode, @NotNull String domain) {
+  public EnrolledCreditorInstitutionStationList getStationsForEnrolledOrganizations(@NotNull String organizationFiscalCode, @NotNull String domain) {
     if (Constants.WILDCARD_CHARACTER.equals(organizationFiscalCode)) {
       throw new AppException(AppError.BAD_REQUEST_WILDCARD_ORG);
     }
@@ -110,7 +110,7 @@ public class EnrolledOrganizationService {
     }
 
 
-    return EnrolledCreditorInstitutionStations.builder()
+    return EnrolledCreditorInstitutionStationList.builder()
         .stations(enrolledCreditorInstitutionStations)
         .build();
   }

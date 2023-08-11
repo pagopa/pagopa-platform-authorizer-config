@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 
 public class CommonUtil {
 
+  private CommonUtil() {}
+
   /**
    * @param page Page returned from the database
    * @return return the page info

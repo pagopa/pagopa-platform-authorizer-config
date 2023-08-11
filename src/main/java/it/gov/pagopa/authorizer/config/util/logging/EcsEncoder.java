@@ -55,13 +55,13 @@ public class EcsEncoder extends EncoderBase<ILoggingEvent> {
   private ThrowableHandlingConverter throwableConverter = null;
   private final ThrowableProxyConverter throwableProxyConverter = new ThrowableProxyConverter();
   private boolean includeOrigin;
-  private final List<AdditionalField> additionalFields = new ArrayList<AdditionalField>();
+  private final List<AdditionalField> additionalFields = new ArrayList<>();
   private OutputStream os;
   protected Layout<ILoggingEvent> messageLayout;
 
   @Override
   public byte[] headerBytes() {
-    return null;
+    return new byte[0];
   }
 
   @Override
@@ -100,6 +100,7 @@ public class EcsEncoder extends EncoderBase<ILoggingEvent> {
    * To make this lib backwards compatible with logback 1.1 we have implement this method.
    */
   public void close() throws IOException {
+    /* Inserted for backward compatibility */
   }
 
   @Override
@@ -155,7 +156,9 @@ public class EcsEncoder extends EncoderBase<ILoggingEvent> {
    * The last character in the StringBuilder will be comma when this is called.
    * You must add a comma after each custom field.
    */
-  protected void addCustomFields(ILoggingEvent event, StringBuilder builder) {}
+  protected void addCustomFields(ILoggingEvent event, StringBuilder builder) {
+    /* Empty at the moment, due to the fact that no custom field is required. */
+  }
 
   private void serializeMarkers(ILoggingEvent event, StringBuilder builder) {
     Marker marker = event.getMarker();
@@ -178,7 +181,7 @@ public class EcsEncoder extends EncoderBase<ILoggingEvent> {
 
   @Override
   public byte[] footerBytes() {
-    return null;
+    return new byte[0];
   }
 
   public void setServiceName(String serviceName) {

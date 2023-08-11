@@ -4,9 +4,9 @@ import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
 import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
 import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
-import it.gov.pagopa.authorizer.config.model.authorization.Authorizations;
+import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationList;
 import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorization;
-import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorizations;
+import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorizationList;
 import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
 import it.gov.pagopa.authorizer.config.repository.CachedAuthorizationRepository;
 import it.gov.pagopa.authorizer.config.util.CommonUtil;
@@ -38,14 +38,14 @@ public class AuthorizationService {
   @Autowired
   private ModelMapper modelMapper;
 
-  public Authorizations getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
+  public AuthorizationList getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
     Page<SubscriptionKeyDomain> page;
     if (ownerId != null) {
       page = authorizationRepository.findByDomainAndOwnerId(domain, ownerId, pageable);
     } else {
       page = authorizationRepository.findByDomain(domain, pageable);
     }
-    return Authorizations.builder()
+    return AuthorizationList.builder()
         .authorizations(page.isEmpty() ? List.of() : page.getContent().stream()
             .map(entity -> modelMapper.map(entity, Authorization.class))
             .collect(Collectors.toList()))
@@ -109,7 +109,7 @@ public class AuthorizationService {
     cachedAuthorizationRepository.remove(domain, subscriptionKey);
   }
 
-  public CachedAuthorizations getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL) {
+  public CachedAuthorizationList getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL) {
     List<CachedAuthorization> cachedAuthorizations = new LinkedList<>();
     List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
     // insert info about STORE's locking variable
@@ -130,7 +130,7 @@ public class AuthorizationService {
             .build());
       }
     }
-    return CachedAuthorizations.builder()
+    return CachedAuthorizationList.builder()
         .cachedAuthorizations(cachedAuthorizations)
         .build();
   }
