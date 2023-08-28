@@ -18,6 +18,7 @@ import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstit
 import lombok.experimental.UtilityClass;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -196,6 +197,10 @@ public class TestUtil {
                                 .segregationCode("03")
                                 .build()))
                 .build();
+    }
+
+    public Page<SubscriptionKeyDomain> getSubscriptionKeyDomainsPaged(String domain, String ownerId) {
+        return new PageImpl<>(getSubscriptionKeyDomains(domain, ownerId));
     }
 
     public List<SubscriptionKeyDomain> getSubscriptionKeyDomains(String domain, String ownerId) {

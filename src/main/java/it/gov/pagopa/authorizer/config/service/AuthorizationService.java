@@ -98,15 +98,27 @@ public class AuthorizationService {
     existingSubscriptionKeyDomain.setLastForcedRefresh(now);
     existingSubscriptionKeyDomain.setLastUpdate(now);
     // save and return the final object
-    return modelMapper.map(authorizationRepository.save(existingSubscriptionKeyDomain), Authorization.class);
+    try {
+      existingSubscriptionKeyDomain = authorizationRepository.save(existingSubscriptionKeyDomain);
+    } catch (DataAccessException e) {
+      log.error("An error occurred while persisting the authorization.", e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR, "Internal server error", "An error occurred while persisting the authorization.");
+    }
+    return modelMapper.map(existingSubscriptionKeyDomain, Authorization.class);
   }
 
   public void deleteAuthorization(@NotNull String authorizationId) {
     SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, authorizationId));
     String domain = existingSubscriptionKeyDomain.getDomain();
     String subscriptionKey = existingSubscriptionKeyDomain.getSubkey();
-    authorizationRepository.delete(existingSubscriptionKeyDomain);
-    cachedAuthorizationRepository.remove(domain, subscriptionKey);
+    // save and return the final object
+    try {
+      authorizationRepository.delete(existingSubscriptionKeyDomain);
+      cachedAuthorizationRepository.remove(domain, subscriptionKey);
+    } catch (DataAccessException e) {
+      log.error("An error occurred while deleting the authorization.", e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR, "Internal server error", "An error occurred while deleting the authorization.");
+    }
   }
 
   public CachedAuthorizationList getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL) {
