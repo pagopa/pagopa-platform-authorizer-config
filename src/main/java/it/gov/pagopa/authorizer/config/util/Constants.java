@@ -4,8 +4,9 @@ import lombok.experimental.UtilityClass;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-@UtilityClass
 public class Constants {
+
+  private Constants() {}
 
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

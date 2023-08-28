@@ -37,6 +37,7 @@ class CachedAuthorizationControllerTest {
             "fakedomain,,",
             "fakedomain,true,",
             "fakedomain,false,",
+            "fakedomain,,77777777777",
             "fakedomain,true,77777777777",
             "fakedomain,false,77777777777",
     })

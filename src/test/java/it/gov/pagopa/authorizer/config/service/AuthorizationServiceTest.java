@@ -127,7 +127,7 @@ class AuthorizationServiceTest {
         // initialize objects
         String domain = "gpd";
         String subkey = "subkey-1";
-        Authorization authorization = TestUtil.getAuthorization(1, "fake_id", domain, "77777777777");
+        Authorization authorization = TestUtil.getAuthorization(1, null, domain, "77777777777");
         // Mocking objects
         when(authorizationRepository.findByDomainAndSubscriptionKey(domain, subkey)).thenReturn(TestUtil.getSubscriptionKeyDomains(domain, "77777777777"));
         // executing logic

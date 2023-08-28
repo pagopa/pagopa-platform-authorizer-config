@@ -37,7 +37,7 @@ public class MutuallyExclusiveFieldsValidator implements ConstraintValidator<Mut
     }
     // check if mutual exclusivity is broken and if so define a custom message
     boolean breakMutualExclusivity = numberOfNotNullElements > 1;
-    boolean breakMutualExclusivityForNull = canBeBothNull && numberOfNotNullElements == 0;
+    boolean breakMutualExclusivityForNull = !canBeBothNull && numberOfNotNullElements == 0;
     if (breakMutualExclusivity) {
       ((ConstraintValidatorContextImpl) context).addMessageParameter("validation.mutually-exclusive.message", String.format("Two or more value for the tags %s are null, but only one of them must have values.", fields));
     }
