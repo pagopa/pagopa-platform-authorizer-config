@@ -1,5 +1,6 @@
 package it.gov.pagopa.authorizer.config.exception;
 
+import it.gov.pagopa.authorizer.config.util.Constants;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -22,15 +23,15 @@ public enum AppError {
 
   CONFLICT_AUTHORIZATION_ALREADY_EXISTENT(HttpStatus.CONFLICT, "Authorization already existent", "An existent authorization was found with domain [%s] and subscription key [%s]."),
 
-  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "Something went wrong during elaboration."),
+  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "Something went wrong during elaboration."),
 
-  INTERNAL_SERVER_ERROR_CREATE(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while persisting the authorization."),
+  INTERNAL_SERVER_ERROR_CREATE(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while persisting the authorization."),
 
-  INTERNAL_SERVER_ERROR_UPDATE(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while updating the authorization."),
+  INTERNAL_SERVER_ERROR_UPDATE(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while updating the authorization."),
 
-  INTERNAL_SERVER_ERROR_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while deleting the authorization."),
+  INTERNAL_SERVER_ERROR_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while deleting the authorization."),
 
-  INTERNAL_SERVER_ERROR_REFRESH(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while refreshing the cached authorizations.");
+  INTERNAL_SERVER_ERROR_REFRESH(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while refreshing the cached authorizations.");
 
   public final HttpStatus httpStatus;
   public final String title;

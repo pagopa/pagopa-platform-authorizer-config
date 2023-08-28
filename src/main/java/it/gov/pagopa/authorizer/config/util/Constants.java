@@ -17,4 +17,6 @@ public class Constants {
   public static final String HEADER_REQUEST_ID = "X-Request-Id";
 
   public static final String WILDCARD_CHARACTER = "*";
+
+  public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
 }
