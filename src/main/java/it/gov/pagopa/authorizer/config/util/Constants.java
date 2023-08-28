@@ -1,6 +1,5 @@
 package it.gov.pagopa.authorizer.config.util;
 
-import lombok.experimental.UtilityClass;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
