@@ -12,11 +12,13 @@ public enum AppError {
 
   BAD_REQUEST_CHANGED_DOMAIN_OR_SUBKEY(HttpStatus.BAD_REQUEST, "Bad request", "It is not possible to change domain or subscription key in update."),
 
+  BAD_REQUEST_INVALID_DOMAIN(HttpStatus.BAD_REQUEST, "Bad Request", "No valid service mapping for domain %s."),
+
   NOT_FOUND_NO_VALID_AUTHORIZATION(HttpStatus.NOT_FOUND, "Authorization not found", "No authorization with id [%s] was found."),
 
   NOT_FOUND_CI_NOT_ENROLLED(HttpStatus.NOT_FOUND, "Invalid creditor institution", "No creditor institution with fiscal code [%s] is enrolled to domain [%s]."),
 
-  NOT_FOUND_NO_VALID_STATION(HttpStatus.NOT_FOUND, "Invalid creditor institution", "No creditor institution with fiscal code [%s] has valid registered stations for domain [%s]."),
+  NOT_FOUND_NO_VALID_STATION(HttpStatus.NOT_FOUND, "Invalid station", "No creditor institution with fiscal code [%s] has valid registered stations for domain [%s]."),
 
   CONFLICT_AUTHORIZATION_ALREADY_EXISTENT(HttpStatus.CONFLICT, "Authorization already existent", "An existent authorization was found with domain [%s] and subscription key [%s]."),
 

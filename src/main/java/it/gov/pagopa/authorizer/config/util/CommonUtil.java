@@ -1,7 +1,10 @@
 package it.gov.pagopa.authorizer.config.util;
 
+import it.gov.pagopa.authorizer.config.exception.AppError;
+import it.gov.pagopa.authorizer.config.exception.AppException;
 import it.gov.pagopa.authorizer.config.model.PageInfo;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 
 public class CommonUtil {
 
@@ -26,5 +29,13 @@ public class CommonUtil {
         .append((ttl / 60) % 60).append("m ")
         .append(ttl % 60).append("s")
         .toString();
+  }
+
+  public static String getServicePathFromDomain(String domain) {
+    String serviceUrl = Constants.DOMAIN_TO_SERVICE_URI_MAPPING.get(domain);
+    if (serviceUrl == null) {
+      throw new AppException(AppError.BAD_REQUEST_INVALID_DOMAIN, domain);
+    }
+    return serviceUrl;
   }
 }

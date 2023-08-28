@@ -12,6 +12,7 @@ import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstit
 import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionStationList;
 import it.gov.pagopa.authorizer.config.model.organization.EnrolledCreditorInstitutionList;
 import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
+import it.gov.pagopa.authorizer.config.util.CommonUtil;
 import it.gov.pagopa.authorizer.config.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -112,7 +113,7 @@ public class EnrolledOrganizationService {
 
   private EnrolledCreditorInstitution getSegregationCodesFromEnrolledCI(String enrolledCI, String domain) {
     EnrolledCreditorInstitution result = null;
-    CIAssociatedCodeList ciAssociatedCodes = executeCall(enrolledCI, getServicePathFromDomain(domain));
+    CIAssociatedCodeList ciAssociatedCodes = executeCall(enrolledCI, CommonUtil.getServicePathFromDomain(domain));
     if (ciAssociatedCodes != null && !ciAssociatedCodes.getUsedCodes().isEmpty()) {
       List<CIAssociatedCode> usedCodes = ciAssociatedCodes.getUsedCodes();
       result = EnrolledCreditorInstitution.builder()
@@ -127,7 +128,7 @@ public class EnrolledOrganizationService {
 
   private List<EnrolledCreditorInstitutionStation> getStationsFromEnrolledCI(String enrolledCI, String domain) {
     List<EnrolledCreditorInstitutionStation> result = new LinkedList<>();
-    CIAssociatedCodeList ciAssociatedCodes = executeCall(enrolledCI, getServicePathFromDomain(domain));
+    CIAssociatedCodeList ciAssociatedCodes = executeCall(enrolledCI, CommonUtil.getServicePathFromDomain(domain));
     if (ciAssociatedCodes != null) {
       result = ciAssociatedCodes.getUsedCodes().stream()
           .map(ciAssociatedCode -> EnrolledCreditorInstitutionStation.builder()
@@ -172,13 +173,6 @@ public class EnrolledOrganizationService {
   }
 
 
-  private String getServicePathFromDomain(String domain) {
-    String serviceUrl = Constants.DOMAIN_TO_SERVICE_URI_MAPPING.get(domain);
-    if (serviceUrl == null) {
-      throw new IllegalArgumentException(String.format("No valid service mapping for domain %s", domain));
-    }
-    return serviceUrl;
-  }
 
 
 
