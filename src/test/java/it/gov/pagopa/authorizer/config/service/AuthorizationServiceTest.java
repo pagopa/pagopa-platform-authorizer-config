@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.QueryTimeoutException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,8 +65,8 @@ class AuthorizationServiceTest {
     })
     void getAuthorizations_200_noResult(String domain, String ownerId) {
         // Mocking objects
-        when(authorizationRepository.findByDomain(domain, pageable)).thenReturn(page);
-        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId, pageable)).thenReturn(page);
+        when(authorizationRepository.findByDomain(domain, pageable)).thenReturn(Page.empty());
+        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId, pageable)).thenReturn(Page.empty());
         // executing logic
         AuthorizationList result = authorizationService.getAuthorizations(domain, ownerId, pageable);
         // executing assertion check
