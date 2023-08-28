@@ -10,6 +10,8 @@ import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
 import it.gov.pagopa.authorizer.config.util.Constants;
 import it.gov.pagopa.authorizer.config.util.TestUtil;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,8 +172,12 @@ class EnrolledOrganizationServiceTest {
         assertEquals(AppError.NOT_FOUND_CI_NOT_ENROLLED.title, exception.getTitle());
     }
 
-    @Test
-    void getStationsForEnrolledOrganizations_404_noValidStation() throws IOException {
+    @ParameterizedTest
+    @CsvSource({
+            "ok2",
+            "ko1"
+    })
+    void getStationsForEnrolledOrganizations_404(String fileExtension) throws IOException {
         // initialize object
         String domain = "gpd";
         String enrolledCI = "77777777777";
@@ -179,24 +185,7 @@ class EnrolledOrganizationServiceTest {
         List<SubscriptionKeyDomain> subkeyDomains = TestUtil.getSubscriptionKeyDomains(domain, enrolledCI);
         subkeyDomains.get(2).getAuthorizedEntities().get(0).setValue(enrolledCI);
         when(authorizationRepository.findByDomain(domain)).thenReturn(subkeyDomains);
-        mockWebClientCommunication("ok2");
-        // executing logic
-        AppException exception = assertThrows(AppException.class, () -> enrolledOrganizationService.getStationsForEnrolledOrganizations(enrolledCI, domain));
-        // executing assertion check
-        assertEquals(AppError.NOT_FOUND_NO_VALID_STATION.httpStatus, exception.getHttpStatus());
-        assertEquals(AppError.NOT_FOUND_NO_VALID_STATION.title, exception.getTitle());
-    }
-
-    @Test
-    void getStationsForEnrolledOrganizations_404_unparseableResponseFromAPIConfig() throws IOException {
-        // initialize object
-        String domain = "gpd";
-        String enrolledCI = "77777777777";
-        // Mocking objects
-        List<SubscriptionKeyDomain> subkeyDomains = TestUtil.getSubscriptionKeyDomains(domain, enrolledCI);
-        subkeyDomains.get(2).getAuthorizedEntities().get(0).setValue(enrolledCI);
-        when(authorizationRepository.findByDomain(domain)).thenReturn(subkeyDomains);
-        mockWebClientCommunication("ko1");
+        mockWebClientCommunication(fileExtension);
         // executing logic
         AppException exception = assertThrows(AppException.class, () -> enrolledOrganizationService.getStationsForEnrolledOrganizations(enrolledCI, domain));
         // executing assertion check

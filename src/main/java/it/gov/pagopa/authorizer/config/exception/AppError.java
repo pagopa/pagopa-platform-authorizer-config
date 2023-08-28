@@ -24,6 +24,12 @@ public enum AppError {
 
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "Something went wrong during elaboration."),
 
+  INTERNAL_SERVER_ERROR_CREATE(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while persisting the authorization."),
+
+  INTERNAL_SERVER_ERROR_UPDATE(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while updating the authorization."),
+
+  INTERNAL_SERVER_ERROR_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while deleting the authorization."),
+
   INTERNAL_SERVER_ERROR_REFRESH(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An error occurred while refreshing the cached authorizations.");
 
   public final HttpStatus httpStatus;

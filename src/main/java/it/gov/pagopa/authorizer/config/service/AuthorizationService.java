@@ -73,8 +73,8 @@ public class AuthorizationService {
     try {
       subscriptionKeyDomain = authorizationRepository.save(subscriptionKeyDomain);
     } catch (DataAccessException e) {
-      log.error("An error occurred while persisting the authorization.", e);
-      throw new AppException(AppError.INTERNAL_SERVER_ERROR, "Internal server error", "An error occurred while persisting the authorization.");
+      log.error("An error occurred while creating the authorization.", e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR_CREATE);
     }
     return modelMapper.map(subscriptionKeyDomain, Authorization.class);
   }
@@ -101,8 +101,8 @@ public class AuthorizationService {
     try {
       existingSubscriptionKeyDomain = authorizationRepository.save(existingSubscriptionKeyDomain);
     } catch (DataAccessException e) {
-      log.error("An error occurred while persisting the authorization.", e);
-      throw new AppException(AppError.INTERNAL_SERVER_ERROR, "Internal server error", "An error occurred while persisting the authorization.");
+      log.error("An error occurred while updating the authorization.", e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR_UPDATE);
     }
     return modelMapper.map(existingSubscriptionKeyDomain, Authorization.class);
   }
@@ -117,7 +117,7 @@ public class AuthorizationService {
       cachedAuthorizationRepository.remove(domain, subscriptionKey);
     } catch (DataAccessException e) {
       log.error("An error occurred while deleting the authorization.", e);
-      throw new AppException(AppError.INTERNAL_SERVER_ERROR, "Internal server error", "An error occurred while deleting the authorization.");
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR_DELETE);
     }
   }
 
