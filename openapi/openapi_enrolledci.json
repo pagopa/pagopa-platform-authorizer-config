@@ -1,10 +1,10 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "title" : "platform-authorizer-config",
-    "description" : "A microservice that provides a set of APIs to manage authorization records for the Authorizer system.",
+    "title" : "@project.artifactId@",
+    "description" : "@project.description@",
     "termsOfService" : "https://www.pagopa.gov.it/",
-    "version" : "0.0.1-16-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
+    "version" : "@project.version@"
   },
   "servers" : [ {
     "url" : "http://localhost",
@@ -38,6 +38,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EnrolledCreditorInstitutionList"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
           "500" : {
             "description" : "Service unavailable",
             "content" : {
@@ -53,19 +66,6 @@
           },
           "403" : {
             "description" : "Forbidden"
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/EnrolledCreditorInstitutions"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -88,6 +88,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EnrolledCreditorInstitutionList"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
           "500" : {
             "description" : "Service unavailable",
             "content" : {
@@ -103,19 +116,6 @@
           },
           "403" : {
             "description" : "Forbidden"
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/EnrolledCreditorInstitutions"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -129,28 +129,11 @@
         "summary" : "Return OK if application is started",
         "operationId" : "healthCheck",
         "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/AppInfo"
-                }
-              }
-            }
+          "429" : {
+            "description" : "Too many requests"
           },
           "500" : {
             "description" : "Service unavailable",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -165,8 +148,25 @@
           "403" : {
             "description" : "Forbidden"
           },
-          "429" : {
-            "description" : "Too many requests"
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AppInfo"
+                }
+              }
+            }
           }
         },
         "security" : [ {
@@ -177,6 +177,38 @@
   },
   "components" : {
     "schemas" : {
+      "EnrolledCreditorInstitution" : {
+        "required" : [ "organization_fiscal_code", "segregation_codes" ],
+        "type" : "object",
+        "properties" : {
+          "organization_fiscal_code" : {
+            "type" : "string",
+            "description" : "The fiscal code related to the creditor institution."
+          },
+          "segregation_codes" : {
+            "type" : "array",
+            "description" : "The list of segregation codes used by the creditor institution to register a station for the required service domain.",
+            "items" : {
+              "type" : "string",
+              "description" : "The list of segregation codes used by the creditor institution to register a station for the required service domain."
+            }
+          }
+        },
+        "description" : "The list of creditor institution enrolled to the Authorizer service."
+      },
+      "EnrolledCreditorInstitutionList" : {
+        "required" : [ "creditor_institutions" ],
+        "type" : "object",
+        "properties" : {
+          "creditor_institutions" : {
+            "type" : "array",
+            "description" : "The list of creditor institution enrolled to the Authorizer service.",
+            "items" : {
+              "$ref" : "#/components/schemas/EnrolledCreditorInstitution"
+            }
+          }
+        }
+      },
       "ProblemJson" : {
         "type" : "object",
         "properties" : {
@@ -196,32 +228,6 @@
             "type" : "string",
             "description" : "A human readable explanation specific to this occurrence of the problem.",
             "example" : "There was an error processing the request"
-          }
-        }
-      },
-      "EnrolledCreditorInstitution" : {
-        "type" : "object",
-        "properties" : {
-          "organization_fiscal_code" : {
-            "type" : "string"
-          },
-          "segregation_codes" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          }
-        }
-      },
-      "EnrolledCreditorInstitutions" : {
-        "required" : [ "creditor_institutions" ],
-        "type" : "object",
-        "properties" : {
-          "creditor_institutions" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/EnrolledCreditorInstitution"
-            }
           }
         }
       },

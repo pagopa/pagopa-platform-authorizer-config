@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -95,6 +97,28 @@ class AuthorizationControllerTest {
     String url = "/authorizations/";
     // mocking invocation
     Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
+    when(authorizationService.createAuthorization(any(Authorization.class))).thenThrow(new AppException(HttpStatus.BAD_REQUEST, "Bad Request", "Some validation error"));
+    // executing API call
+    String request = TestUtil.toJson(mockedResource);
+    mvc.perform(post(url).content(request).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+
+
+  @ParameterizedTest
+  @CsvSource({
+          ",",
+          "some,someother"
+  })
+  void createAuthorization_400_breakingMutualExclusivity(String value, String values) throws Exception {
+    String id = "some-uuid";
+    String url = "/authorizations/";
+    // mocking invocation
+    Authorization mockedResource = TestUtil.getAuthorization(0, id, "some-domain", "some-owner");
+    mockedResource.getAuthorizedEntities().get(0).setValue(value);
+    mockedResource.getAuthorizedEntities().get(0).setValues(values != null ? List.of(values) : null);
     when(authorizationService.createAuthorization(any(Authorization.class))).thenThrow(new AppException(HttpStatus.BAD_REQUEST, "Bad Request", "Some validation error"));
     // executing API call
     String request = TestUtil.toJson(mockedResource);

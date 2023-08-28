@@ -4,7 +4,6 @@ import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
 import it.gov.pagopa.authorizer.config.model.PageInfo;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 
 public class CommonUtil {
 
