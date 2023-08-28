@@ -171,9 +171,4 @@ public class EnrolledOrganizationService {
     log.debug(String.format("Communication with APIConfig toward endpoint [%s] with parameters [%s, %s], returned HTTP status code [%s] and body [%s]", this.apiconfigSelfcareIntegrationURI, enrolledCI, service, apiconfigResponse.getStatusCode(), apiconfigResponse.getBody()));
     return apiconfigResponse;
   }
-
-
-
-
-
 }
