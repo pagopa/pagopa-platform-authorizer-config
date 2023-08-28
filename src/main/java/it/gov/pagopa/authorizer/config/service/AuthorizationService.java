@@ -126,9 +126,13 @@ public class AuthorizationService {
     List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
     // insert info about STORE's locking variable
     Long storeVariableTTL = cachedAuthorizationRepository.getTTL(domain);
+    String storeVariableTTLAsString = "Expired";
+    if (storeVariableTTL != null) {
+      storeVariableTTLAsString = convertTTL ? CommonUtil.convertTTLToString(storeVariableTTL) : Long.toString(storeVariableTTL);
+    }
     cachedAuthorizations.add(CachedAuthorization.builder()
         .description(String.format("Locking state for domain %s (remaining time before unlocking automatic refresh)", domain))
-        .ttl(convertTTL ? CommonUtil.convertTTLToString(storeVariableTTL) : Long.toString(storeVariableTTL))
+        .ttl(storeVariableTTLAsString)
         .build());
     // insert info about all cached authorizations
     for (SubscriptionKeyDomain entity : entities) {

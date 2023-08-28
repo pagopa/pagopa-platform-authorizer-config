@@ -6,6 +6,7 @@ import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
 import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationList;
+import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorizationList;
 import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
 import it.gov.pagopa.authorizer.config.repository.CachedAuthorizationRepository;
 import it.gov.pagopa.authorizer.config.util.TestUtil;
@@ -275,9 +276,64 @@ class AuthorizationServiceTest {
         assertEquals(AppError.INTERNAL_SERVER_ERROR.title, exception.getTitle());
     }
 
-    @Test
-    void getCachedAuthorization_200() {
+    @ParameterizedTest
+    @CsvSource({
+            "gpd,,true",
+            "gpd,77777777777,true",
+            "gpd,,false",
+            "gpd,77777777777,false",
+    })
+    void getCachedAuthorization_200(String domain, String ownerId, boolean convertTTL) {
+        // Mocking objects
+        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(TestUtil.getSubscriptionKeyDomains(domain, ownerId));
+        when(cachedAuthorizationRepository.getTTL(domain)).thenReturn(1000L);
+        when(cachedAuthorizationRepository.getTTL(anyString(), anyString())).thenReturn(1200L);
+        // executing logic
+        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL);
+        // executing assertion check
+        assertNotNull(result.getCachedAuthorizations());
+        assertTrue(result.getCachedAuthorizations().size() > 0);
+        assertNull(result.getCachedAuthorizations().get(0).getSubscriptionKey());
+        assertNotNull(result.getCachedAuthorizations().get(1).getSubscriptionKey());
+    }
 
+    @ParameterizedTest
+    @CsvSource({
+            "gpd,,true",
+            "gpd,77777777777,true",
+            "gpd,,false",
+            "gpd,77777777777,false",
+    })
+    void getCachedAuthorization_200_noAuthorization(String domain, String ownerId, boolean convertTTL) {
+        // Mocking objects
+        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(List.of());
+        when(cachedAuthorizationRepository.getTTL(domain)).thenReturn(1000L);
+        // executing logic
+        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL);
+        // executing assertion check
+        assertNotNull(result.getCachedAuthorizations());
+        assertEquals(1, result.getCachedAuthorizations().size());
+        assertNull(result.getCachedAuthorizations().get(0).getSubscriptionKey());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "gpd,,true",
+            "gpd,77777777777,true",
+            "gpd,,false",
+            "gpd,77777777777,false",
+    })
+    void getCachedAuthorization_200_expiredDomain(String domain, String ownerId, boolean convertTTL) {
+        // Mocking objects
+        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(List.of());
+        when(cachedAuthorizationRepository.getTTL(domain)).thenReturn(null);
+        // executing logic
+        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL);
+        // executing assertion check
+        assertNotNull(result.getCachedAuthorizations());
+        assertEquals(1, result.getCachedAuthorizations().size());
+        assertNull(result.getCachedAuthorizations().get(0).getSubscriptionKey());
+        assertEquals("Expired", result.getCachedAuthorizations().get(0).getTtl());
     }
 
     @ParameterizedTest
