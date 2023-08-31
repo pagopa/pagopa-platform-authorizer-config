@@ -2,16 +2,12 @@ version: '3.8'
 
 services:
   app:
-    container_name: 'platform-authorizer-conf'
+    container_name: 'platform-authorizer-config'
     image: ${image}
     platform: linux/amd64
     build:
-      dockerfile: Dockerfile_integration_test
+      dockerfile: Dockerfile
       context: ../
-      args:
-        QUARKUS_PROFILE: prod
-        APP_NAME: pagopa-platform-authorizer-conf
-        SLEEP_FOR_INTEGRATION: 180000
     env_file:
       - ./.env
     ports:

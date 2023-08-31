@@ -6,6 +6,6 @@ tags = {
   CreatedBy   = "Terraform"
   Environment = "Uat"
   Owner       = "pagoPA"
-  Source      = "https://github.com/pagopa/pagopa-platform-authorizer-config
+  Source      = "https://github.com/pagopa/pagopa-platform-authorizer-config"
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
 }

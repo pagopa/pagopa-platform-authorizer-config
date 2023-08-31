@@ -4,39 +4,28 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.0.2"
+    tag: "0.0.1-17-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
     pullPolicy: Always
   livenessProbe:
     httpGet:
-      path: /q/health/live
+      path: /actuator/health/liveness
       port: 8080
     initialDelaySeconds: 90
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
-      path: /q/health/ready
+      path: /actuator/health/readiness
       port: 8080
     initialDelaySeconds: 90
     failureThreshold: 6
     periodSeconds: 10
   deployment:
     create: true
-  serviceMonitor:
-    create: true
-    endpoints:
-      - interval: 10s #jmx-exporter
-        targetPort: 12345
-        path: /metrics
-  ports:
-    - 8080 #http
-    - 12345 #jmx-exporter
   service:
     create: true
     type: ClusterIP
-    ports:
-      - 8080 #http
-      - 12345 #jmx-exporter
+    port: 8080
   ingress:
     create: true
     host: "weuuat.shared.internal.dev.platform.pagopa.it"
@@ -76,15 +65,24 @@ microservice-chart:
     APP_LOGGING_LEVEL: 'DEBUG'
     DEFAULT_LOGGING_LEVEL: 'INFO'
     ENABLE_ECS_CONSOLE: "true"
+    OTEL_SERVICE_NAME: "pagopa-platform-authorizer-config"
     OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopaplatformauthorizerconfigotl,deployment.environment=uat"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
-    JAVA_TOOL_OPTIONS: "-javaagent:/deployments/jmx_prometheus_javaagent-0.19.0.jar=12345:/deployments/config.yaml -javaagent:/home/site/wwwroot/opentelemetry-javaagent.jar -Xmx1024m"
+    COSMOS_URI: "https://pagopa-u-weu-shared-auth-cosmos-account.documents.azure.com:443/"
+    REDIS_HOST: "pagopa-u-redis.redis.cache.windows.net"
+    REDIS_PORT: "6380"
+    CLIENT_READ_TIMEOUT: "10000"
+    CLIENT_CONNECTION_TIMEOUT: "10000"
+    APICONFIG_SELFCARE_INTEGRATION_PATH: "https://api.uat.platform.pagopa.it/apiconfig-selfcare-integration/v1"
+    CORS_CONFIGURATION: '{"origins": ["*"], "methods": ["*"]}'
   envSecret:
-    # required
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-u-connection-string'
     OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
+    COSMOS_KEY: 'auth-u-cosmos-key'
+    REDIS_PASSWORD: 'redis-password'
+    APICONFIG_SELFCARE_INTEGRATION_SUBKEY: 'auth-u-apiconfig-selfcare-integration-subkey'
   keyvault:
     name: "pagopa-u-shared-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
@@ -114,7 +112,7 @@ microservice-chart:
       create: true
       image:
         repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-        tag: "0.0.2"
+        tag: "0.0.1-17-PAGOPA-1143-sviluppo-gestione-autorizzazioni-per-authorizer"
         pullPolicy: Always
       envConfig: {}
       envSecret: {}
