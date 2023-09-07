@@ -21,8 +21,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 class OpenApiGenerationTest {
 
   private static final String[][] apiDocsGroups = {
-      { "core", "/v3/api-docs/crud"},
-      { "enrolledci", "/v3/api-docs/enrolled_ci" }
+      { "", "/v3/api-docs/general" },
+      { "_core", "/v3/api-docs/crud"},
+      { "_enrolledci", "/v3/api-docs/enrolled_ci" }
   };
 
   @Autowired ObjectMapper objectMapper;
@@ -45,7 +46,7 @@ class OpenApiGenerationTest {
                 String formatted = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(swagger);
                 Path basePath = Paths.get("openapi/");
                 Files.createDirectories(basePath);
-                Files.write(basePath.resolve(String.format("openapi_%s.json", apiDocs[0])), formatted.getBytes());
+                Files.write(basePath.resolve(String.format("openapi%s.json", apiDocs[0])), formatted.getBytes());
               });
     }
   }
