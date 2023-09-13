@@ -77,6 +77,45 @@ class AuthorizationControllerTest {
   }
 
   @Test
+  void getAuthorizationBySubkey_200() throws Exception {
+    String subkey = "some-subkey";
+    String url = String.format("/authorizations/subkey/%s", subkey);
+    // mocking invocation
+    when(authorizationService.getAuthorizationBySubscriptionKey(anyString()))
+            .thenReturn(TestUtil.getAuthorization(0, subkey, "some-domain", "some-owner"));
+    // executing API call
+    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  void getAuthorizationBySubkey_404() throws Exception {
+    String subkey = "some-subkey";
+    String url = String.format("/authorizations/subkey/%s", subkey);
+    // mocking invocation
+    when(authorizationService.getAuthorizationBySubscriptionKey(anyString()))
+            .thenThrow(new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION_WITH_SUBKEY, subkey));
+    // executing API call
+    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  void getAuthorizationBySubkey_500() throws Exception {
+    String subkey = "some-subkey";
+    String url = String.format("/authorizations/subkey/%s", subkey);
+    // mocking invocation
+    when(authorizationService.getAuthorizationBySubscriptionKey(anyString()))
+            .thenThrow(new AppException(AppError.INTERNAL_SERVER_ERROR_MULTIPLE_AUTHORIZATION_WITH_SAME_SUBKEY, subkey));
+    // executing API call
+    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
   void createAuthorization_200() throws Exception {
     String id = "some-uuid";
     String url = "/authorizations/";

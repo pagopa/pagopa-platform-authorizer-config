@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AuthorizationRepository extends CosmosRepository<SubscriptionKeyDomain, String> {
@@ -19,6 +20,8 @@ public interface AuthorizationRepository extends CosmosRepository<SubscriptionKe
   List<SubscriptionKeyDomain> findByDomainAndOwnerId(@Param("domain") String domain, @Param("ownerId") String ownerId);
 
   List<SubscriptionKeyDomain> findByDomain(String domain);
+
+  Optional<SubscriptionKeyDomain> findBySubkey(String subkey);
 
   Page<SubscriptionKeyDomain> findByDomainAndOwnerId(String domain, String ownerId, Pageable pageable);
 

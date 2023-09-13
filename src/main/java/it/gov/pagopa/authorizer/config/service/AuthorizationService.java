@@ -18,6 +18,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.NonUniqueResultException;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -51,6 +53,17 @@ public class AuthorizationService {
             .collect(Collectors.toList()))
         .pageInfo(CommonUtil.buildPageInfo(page))
         .build();
+  }
+
+  public Authorization getAuthorizationBySubscriptionKey(@NotBlank String subscriptionKey) {
+    SubscriptionKeyDomain entity;
+    try {
+      entity = authorizationRepository.findBySubkey(subscriptionKey).orElseThrow(() -> new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION_WITH_SUBKEY, subscriptionKey));
+    } catch (DataAccessException e) {
+      log.error("Error while reading authorizations by subscription key.", e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR_MULTIPLE_AUTHORIZATION_WITH_SAME_SUBKEY, subscriptionKey);
+    }
+    return modelMapper.map(entity, Authorization.class);
   }
 
   public Authorization getAuthorization(@NotNull String authorizationId) {
@@ -151,7 +164,7 @@ public class AuthorizationService {
         .build();
   }
 
-  public void refreshCachedAuthorizations(@NotNull String domain, String ownerId) {
+  public void refreshCachedAuthorizations(@NotNull String domain, @NotBlank String ownerId) {
     List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
     String now = LocalDateTime.now().format(Constants.DATE_FORMATTER);
     for (SubscriptionKeyDomain entity : entities) {
