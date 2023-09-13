@@ -1,5 +1,6 @@
 package it.gov.pagopa.authorizer.config.service;
 
+import com.azure.spring.data.cosmos.exception.CosmosAccessException;
 import it.gov.pagopa.authorizer.config.Application;
 import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
 import it.gov.pagopa.authorizer.config.exception.AppError;
@@ -136,7 +137,7 @@ class AuthorizationServiceTest {
         // initialize objects
         String subkey = "fake_subkey";
         // Mocking objects
-        when(authorizationRepository.findBySubkey(subkey)).thenThrow(NonUniqueResultException.class);
+        when(authorizationRepository.findBySubkey(subkey)).thenThrow(CosmosAccessException.class);
         // executing logic
         AppException exception = assertThrows(AppException.class, () -> authorizationService.getAuthorizationBySubscriptionKey(subkey));
         // executing assertion check
