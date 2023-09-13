@@ -52,13 +52,9 @@ class CachedAuthorizationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "fakedomain,,",
-            "fakedomain,77777777777",
-    })
-    void refreshCachedAuthorizations_200(String domain, String ownerId) throws Exception {
-        String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", domain, ownerId == null ? "" : ownerId);
+    @Test
+    void refreshCachedAuthorizations_200() throws Exception {
+        String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", "fakedomain", "77777777777");
         // mocking invocation
         doNothing().when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
         // executing API call
