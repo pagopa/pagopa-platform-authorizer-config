@@ -65,14 +65,14 @@ public class CachedAuthorizationController {
 
 
   /**
-   * POST /{domain}/refresh : Refresh cached authorizations by domain
+   * POST /{domain}/refresh : Refresh cached authorizations by domain and owner
    *
    * @param domain  The domain on which the authorizations will be filtered.
    * @param ownerId The identifier of the authorizations' owner.
    * @return OK (status code 200) or Bad Request (status code 400) or Conflict (status code 409) or Too many request (status code 429) or Service unavailable (status code 500)
    */
   @Operation(
-      summary = "Refresh cached authorizations by domain",
+      summary = "Refresh cached authorizations by domain and owner",
       security = {
           @SecurityRequirement(name = "ApiKey")
       },
@@ -89,8 +89,8 @@ public class CachedAuthorizationController {
   public ResponseEntity<Authorization> refreshCachedAuthorizations(
       @Parameter(description = "The domain on which the authorizations will be filtered.", required = true)
       @NotBlank @PathVariable("domain") String domain,
-      @Parameter(description = "The identifier of the authorizations' owner.")
-      @RequestParam(value = "ownerId", required = false) String ownerId) {
+      @Parameter(description = "The identifier of the authorizations' owner.", required = true)
+      @NotBlank @RequestParam(value = "ownerId") String ownerId) {
     authorizationService.refreshCachedAuthorizations(domain, ownerId);
     return ResponseEntity.ok().build();
   }

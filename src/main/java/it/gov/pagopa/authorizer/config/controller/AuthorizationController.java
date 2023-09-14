@@ -108,6 +108,34 @@ public class AuthorizationController {
   }
 
   /**
+   * GET /{authorizationId} : Get authorization by subscription key
+   *
+   * @param subscriptionKey The subscription key related to the stored authorization.
+   * @return OK (status code 200) or Not Found (status code 404) or Too many request (status code 429) or Service unavailable/error (status code 500)
+   */
+  @Operation(
+      summary = "Get authorization by subscription key",
+      security = {
+          @SecurityRequirement(name = "ApiKey")
+      },
+      tags = { "Authorizations" })
+  @ApiResponses(
+      value = {
+          @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationList.class))),
+          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+          @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
+          @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+          @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+      })
+  @GetMapping(value = "/subkey/{subscriptionKey}", produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<Authorization> getAuthorizationBySubscriptionKey(
+      @Parameter(description = "The subscription key related to the stored authorization.", required = true)
+      @PathVariable("subscriptionKey") String subscriptionKey) {
+    return ResponseEntity.ok(authorizationService.getAuthorizationBySubscriptionKey(subscriptionKey));
+  }
+
+  /**
    * POST / : Create new authorization
    *
    * @param authorization The authorization content to be created.

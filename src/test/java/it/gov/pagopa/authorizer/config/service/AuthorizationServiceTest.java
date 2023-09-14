@@ -1,5 +1,6 @@
 package it.gov.pagopa.authorizer.config.service;
 
+import com.azure.spring.data.cosmos.exception.CosmosAccessException;
 import it.gov.pagopa.authorizer.config.Application;
 import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
 import it.gov.pagopa.authorizer.config.exception.AppError;
@@ -22,6 +23,7 @@ import org.springframework.dao.QueryTimeoutException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +101,48 @@ class AuthorizationServiceTest {
         // executing assertion check
         assertEquals(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION.httpStatus, exception.getHttpStatus());
         assertEquals(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION.title, exception.getTitle());
+    }
+
+    @Test
+    void getAuthorizationBySubscriptionKey_200() {
+        // initialize objects
+        String subkey = "fake_subkey";
+        // Mocking objects
+        SubscriptionKeyDomain subscriptionKeyDomain = TestUtil.getSubscriptionKeyDomain(1, subkey, "gpd", "fakedomain");
+        subscriptionKeyDomain.setSubkey(subkey);
+        when(authorizationRepository.findBySubkey(subkey)).thenReturn(Optional.ofNullable(subscriptionKeyDomain));
+        // executing logic
+        Authorization result = authorizationService.getAuthorizationBySubscriptionKey(subkey);
+        // executing assertion check
+        assertNotNull(result);
+        assertEquals(subkey, result.getSubscriptionKey());
+        assertTrue(result.getAuthorizedEntities().size() > 0);
+    }
+
+    @Test
+    void getAuthorizationBySubscriptionKey_404() {
+        // initialize objects
+        String subkey = "fake_subkey";
+        // Mocking objects
+        when(authorizationRepository.findBySubkey(subkey)).thenReturn(Optional.empty());
+        // executing logic
+        AppException exception = assertThrows(AppException.class, () -> authorizationService.getAuthorizationBySubscriptionKey(subkey));
+        // executing assertion check
+        assertEquals(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION_WITH_SUBKEY.httpStatus, exception.getHttpStatus());
+        assertEquals(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION_WITH_SUBKEY.title, exception.getTitle());
+    }
+
+    @Test
+    void getAuthorizationBySubscriptionKey_500() {
+        // initialize objects
+        String subkey = "fake_subkey";
+        // Mocking objects
+        when(authorizationRepository.findBySubkey(subkey)).thenThrow(CosmosAccessException.class);
+        // executing logic
+        AppException exception = assertThrows(AppException.class, () -> authorizationService.getAuthorizationBySubscriptionKey(subkey));
+        // executing assertion check
+        assertEquals(AppError.INTERNAL_SERVER_ERROR_MULTIPLE_AUTHORIZATION_WITH_SAME_SUBKEY.httpStatus, exception.getHttpStatus());
+        assertEquals(AppError.INTERNAL_SERVER_ERROR_MULTIPLE_AUTHORIZATION_WITH_SAME_SUBKEY.title, exception.getTitle());
     }
 
     @Test

@@ -17,6 +17,8 @@ public enum AppError {
 
   NOT_FOUND_NO_VALID_AUTHORIZATION(HttpStatus.NOT_FOUND, "Authorization not found", "No authorization with id [%s] was found."),
 
+  NOT_FOUND_NO_VALID_AUTHORIZATION_WITH_SUBKEY(HttpStatus.NOT_FOUND, "Authorization not found", "No authorization with subkey [%s] was found."),
+
   NOT_FOUND_CI_NOT_ENROLLED(HttpStatus.NOT_FOUND, "Invalid creditor institution", "No creditor institution with fiscal code [%s] is enrolled to domain [%s]."),
 
   NOT_FOUND_NO_VALID_STATION(HttpStatus.NOT_FOUND, "Invalid station", "No creditor institution with fiscal code [%s] has valid registered stations for domain [%s]."),
@@ -31,7 +33,9 @@ public enum AppError {
 
   INTERNAL_SERVER_ERROR_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while deleting the authorization."),
 
-  INTERNAL_SERVER_ERROR_REFRESH(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while refreshing the cached authorizations.");
+  INTERNAL_SERVER_ERROR_REFRESH(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while refreshing the cached authorizations."),
+
+  INTERNAL_SERVER_ERROR_MULTIPLE_AUTHORIZATION_WITH_SAME_SUBKEY(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "There are multiple authorization with the same subscription key [%s]. Please, check if they are correct.");
 
   public final HttpStatus httpStatus;
   public final String title;
