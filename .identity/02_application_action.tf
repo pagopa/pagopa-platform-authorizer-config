@@ -59,6 +59,19 @@ resource "azurerm_role_assignment" "environment_terraform_resource_group_dashboa
   principal_id         = module.github_runner_app.object_id
 }
 
+resource "azurerm_role_assignment" "action_group_slack_role" {
+  scope                = data.azurerm_monitor_action_group.action_group_slack.id
+  role_definition_name = "Reader"
+  principal_id         = module.github_runner_app.object_id
+}
+resource "azurerm_role_assignment" "action_group_mail_role" {
+  scope                = data.azurerm_monitor_action_group.action_group_mail.id
+  role_definition_name = "Reader"
+  principal_id         = module.github_runner_app.object_id
+}
+
+
+
 resource "azurerm_role_assignment" "environment_key_vault" {
   scope                = data.azurerm_key_vault.key_vault.id
   role_definition_name = "Reader"

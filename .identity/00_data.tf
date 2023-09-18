@@ -27,6 +27,15 @@ data "azurerm_key_vault" "domain_key_vault" {
   resource_group_name = "pagopa-${var.env_short}-${local.domain}-sec-rg"
 }
 
+data "azurerm_monitor_action_group" "action_group_slack" {
+  resource_group_name = "pagopa-${var.env_short}-monitor-rg"
+  name                = "SlackPagoPA"
+}
+data "azurerm_monitor_action_group" "action_group_mail" {
+  resource_group_name = "pagopa-${var.env_short}-monitor-rg"
+  name                = "PagoPA"
+}
+
 data "azurerm_resource_group" "apim_resource_group" {
   name = "${local.product}-api-rg"
 }
