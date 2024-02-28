@@ -9,7 +9,7 @@
 
 ---
 ## API Documentation 📖
-See the [OpenAPI 3 here.]([https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-platform-authorizer-config/openapi/openapi.json](https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-platform-authorizer-config/main/openapi/openapi.json))
+See the [OpenAPI 3 here.](https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-platform-authorizer-config/main/openapi/openapi.json)
 
 ---
 
