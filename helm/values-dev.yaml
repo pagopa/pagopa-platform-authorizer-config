@@ -30,12 +30,12 @@ microservice-chart:
         targetPort: 12345
         path: /metrics
   ports:
-    - 8080
+    - 80 #http
+    - 12345 #jmx-exporter
   service:
     type: ClusterIP
     ports:
       - 8080
-      - 12345 #jmx-exporter
   ingress:
     create: true
     host: "weudev.shared.internal.dev.platform.pagopa.it"
@@ -107,6 +107,7 @@ microservice-chart:
     name: "pagopa-d-shared-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   nodeSelector: {}
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
