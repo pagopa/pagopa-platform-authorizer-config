@@ -10,14 +10,14 @@ microservice-chart:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 120
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 120
     failureThreshold: 6
     periodSeconds: 10
   deployment:
@@ -103,21 +103,6 @@ microservice-chart:
                 values:
                   - user
   canaryDelivery:
-    create: false
-    ingress:
-      create: false
-      canary:
-        type: header
-        headerName: X-Canary
-        headerValue: canary
-        weightPercent: 0
-    service:
-      create: false
     deployment:
-      create: false
       image:
-        repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-        tag: "0.2.1"
-        pullPolicy: Always
-      envConfig: {}
-      envSecret: {}
+        tag: ""
