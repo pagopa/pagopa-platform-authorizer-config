@@ -18,7 +18,7 @@
   </parent>
 
   <properties>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <azure.cosmosdb.data.version>3.32.0</azure.cosmosdb.data.version>
   </properties>
 
