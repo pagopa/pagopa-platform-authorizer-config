@@ -14,7 +14,7 @@ See the [OpenAPI 3 here.](https://editor.swagger.io/?url=https://raw.githubuserc
 ---
 
 ## Technology Stack
-- Java 11
+- Java 17
 - Quarkus
 - other...
 ---
