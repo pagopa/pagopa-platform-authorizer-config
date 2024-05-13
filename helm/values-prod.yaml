@@ -73,7 +73,6 @@ microservice-chart:
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     COSMOS_URI: "https://pagopa-p-weu-shared-auth-cosmos-account.documents.azure.com:443/"
-    REDIS_HOST: "pagopa-p-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
     CLIENT_READ_TIMEOUT: "10000"
     CLIENT_CONNECTION_TIMEOUT: "10000"
@@ -87,6 +86,7 @@ microservice-chart:
     OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
     COSMOS_KEY: 'auth-p-cosmos-key'
     REDIS_PASSWORD: 'redis-password'
+    REDIS_HOST: 'redis-hostname'
     APICONFIG_SELFCARE_INTEGRATION_SUBKEY: 'auth-p-apiconfig-selfcare-integration-subkey'
   keyvault:
     name: "pagopa-p-shared-kv"
