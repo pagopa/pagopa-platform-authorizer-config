@@ -2,8 +2,8 @@ apiVersion: v2
 name: pagopa-platform-authorizer-config
 description: Microservice that provides a set of APIs to manage authorization records for the Authorizer system.
 type: application
-version: 0.32.0
-appVersion: 0.2.6
+version: 0.33.0
+appVersion: 0.2.7
 dependencies:
   - name: microservice-chart
     version: 2.8.0
