@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.2.12"
+    tag: "0.2.12-1-PIDM-484-update-helm-chart"
     pullPolicy: Always
   livenessProbe:
     httpGet:
