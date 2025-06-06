@@ -4,7 +4,7 @@
     "title": "platform-authorizer-config",
     "description": "A microservice that provides a set of APIs to manage authorization records for the Authorizer system.",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.2.12"
+    "version": "0.2.12-1-PIDM-484-update-helm-chart"
   },
   "servers": [
     {

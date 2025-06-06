@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.2.12"
+    tag: "0.2.12-1-PIDM-484-update-helm-chart"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -22,6 +22,7 @@ microservice-chart:
     periodSeconds: 10
   deployment:
     create: true
+    replicas: 1
   service:
     create: true
     type: ClusterIP
@@ -35,7 +36,7 @@ microservice-chart:
   serviceAccount:
     create: false
     annotations: {}
-    name: ""
+    name: "shared-workload-identity"
   podAnnotations: {}
   podSecurityContext:
     seccompProfile:
@@ -45,10 +46,10 @@ microservice-chart:
   resources:
     requests:
       memory: "512Mi"
-      cpu: "0.25"
+      cpu: "0.30"
     limits:
-      memory: "512Mi"
-      cpu: "0.25"
+      memory: "1024Mi"
+      cpu: "0.7"
   autoscaling:
     enable: true
     minReplica: 1
@@ -107,3 +108,5 @@ microservice-chart:
       image:
         tag: ""
     create: false
+  azure:
+    workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>

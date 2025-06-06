@@ -7,7 +7,7 @@
 
   <groupId>it.gov.pagopa</groupId>
   <artifactId>platform-authorizer-config</artifactId>
-  <version>0.2.12</version>
+  <version>0.2.12-1-PIDM-484-update-helm-chart</version>
   <name>pagopa-platform-authorizer-config</name>
   <description>A microservice that provides a set of APIs to manage authorization records for the Authorizer system.</description>
 
