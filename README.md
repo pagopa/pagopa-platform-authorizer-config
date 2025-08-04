@@ -1,4 +1,4 @@
-# pagopPA Platform Authorizer Configurator
+# pagoPA Platform Authorizer Configurator
 
 A microservice that provides a set of APIs to manage authorization records for the Authorizer system.
 
