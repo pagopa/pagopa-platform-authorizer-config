@@ -164,8 +164,8 @@ public class AuthorizationService {
         .build();
   }
 
-  public void refreshCachedAuthorizations(@NotNull String domain, @NotBlank String ownerId) {
-    List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
+  public void refreshCachedAuthorizations(@NotNull String domain, String ownerId) {
+    List<SubscriptionKeyDomain> entities = ownerId != null ? authorizationRepository.findByDomain(domain) : authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
     String now = LocalDateTime.now().format(Constants.DATE_FORMATTER);
     for (SubscriptionKeyDomain entity : entities) {
       entity.setLastForcedRefresh(now);

@@ -89,8 +89,8 @@ public class CachedAuthorizationController {
   public ResponseEntity<Authorization> refreshCachedAuthorizations(
       @Parameter(description = "The domain on which the authorizations will be filtered.", required = true)
       @NotBlank @PathVariable("domain") String domain,
-      @Parameter(description = "The identifier of the authorizations' owner.", required = true)
-      @NotBlank @RequestParam(value = "ownerId") String ownerId) {
+      @Parameter(description = "The identifier of the authorizations' owner.")
+      @RequestParam(value = "ownerId", required = false) String ownerId) {
     authorizationService.refreshCachedAuthorizations(domain, ownerId);
     return ResponseEntity.ok().build();
   }

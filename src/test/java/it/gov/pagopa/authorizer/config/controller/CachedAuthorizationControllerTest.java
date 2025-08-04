@@ -53,6 +53,16 @@ class CachedAuthorizationControllerTest {
     }
 
     @Test
+    void refreshCachedAuthorizations_noOwner_200() throws Exception {
+        String url = String.format("/cachedauthorizations/%s/refresh", "fakedomain");
+        // mocking invocation
+        doNothing().when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
+        // executing API call
+        mvc.perform(post(url).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void refreshCachedAuthorizations_200() throws Exception {
         String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", "fakedomain", "77777777777");
         // mocking invocation

@@ -15,8 +15,8 @@ See the [OpenAPI 3 here.](https://editor.swagger.io/?url=https://raw.githubuserc
 
 ## Technology Stack
 - Java 17
-- Quarkus
-- other...
+- Spring Boot 3
+- Maven
 ---
 
 ## Running the infrastructure 🚀
