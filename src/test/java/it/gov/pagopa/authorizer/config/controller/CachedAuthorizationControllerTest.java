@@ -52,9 +52,14 @@ class CachedAuthorizationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    @Test
-    void refreshCachedAuthorizations_noOwner_200() throws Exception {
-        String url = String.format("/cachedauthorizations/%s/refresh", "fakedomain");
+
+    @ParameterizedTest
+    @CsvSource({
+            "fakedomain,",
+            "fakedomain,77777777777",
+    })
+    void refreshCachedAuthorizations_200(String domain, String ownerId) throws Exception {
+        String url = ownerId == null ? String.format("/cachedauthorizations/%s/refresh", domain) : String.format("/cachedauthorizations/%s/refresh?ownerId=%s", domain, ownerId);
         // mocking invocation
         doNothing().when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
         // executing API call
@@ -62,19 +67,13 @@ class CachedAuthorizationControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void refreshCachedAuthorizations_200() throws Exception {
-        String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", "fakedomain", "77777777777");
-        // mocking invocation
-        doNothing().when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
-        // executing API call
-        mvc.perform(post(url).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void refreshCachedAuthorizations_500() throws Exception {
-        String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", "fakedomain", "77777777777");
+    @ParameterizedTest
+    @CsvSource({
+            "fakedomain,",
+            "fakedomain,77777777777",
+    })
+    void refreshCachedAuthorizations_500(String domain, String ownerId) throws Exception {
+        String url = ownerId == null ? String.format("/cachedauthorizations/%s/refresh", domain) : String.format("/cachedauthorizations/%s/refresh?ownerId=%s", domain, ownerId);
         // mocking invocation
         doThrow(new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH)).when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
         // executing API call
