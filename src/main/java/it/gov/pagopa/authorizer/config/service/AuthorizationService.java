@@ -14,8 +14,10 @@ import it.gov.pagopa.authorizer.config.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,12 @@ public class AuthorizationService {
 
   @Autowired
   private ModelMapper modelMapper;
+
+  @Value("${authorizer.configuration.limit}")
+  private Integer configurationLimit;
+
+  @Value("${authorizer.configuration.offset}")
+  private Integer configurationOffset;
 
   public AuthorizationList getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
     Page<SubscriptionKeyDomain> page;
@@ -165,16 +173,28 @@ public class AuthorizationService {
   }
 
   public void refreshCachedAuthorizations(@NotNull String domain, String ownerId) {
-    List<SubscriptionKeyDomain> entities = ownerId != null ? authorizationRepository.findByDomain(domain) : authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
+    Pageable pageable = PageRequest.of(configurationOffset, configurationLimit);
+    Page<SubscriptionKeyDomain> page;
     String now = LocalDateTime.now().format(Constants.DATE_FORMATTER);
-    for (SubscriptionKeyDomain entity : entities) {
-      entity.setLastForcedRefresh(now);
-    }
-    try {
-      authorizationRepository.saveAll(entities);
-    } catch (DataAccessException e) {
-      log.error("An error occurred while refreshing cached authorizations. ", e);
-      throw new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH);
-    }
+
+    do {
+      page = ownerId == null
+              ? authorizationRepository.findByDomain(domain, pageable)
+              : authorizationRepository.findByDomainAndOwnerId(domain, ownerId, pageable);
+
+      List<SubscriptionKeyDomain> entities = page.getContent();
+      for (SubscriptionKeyDomain entity : entities) {
+        entity.setLastForcedRefresh(now);
+      }
+
+      try {
+        authorizationRepository.saveAll(entities);
+      } catch (DataAccessException e) {
+        log.error("An error occurred while refreshing cached authorizations.", e);
+        throw new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH);
+      }
+
+      pageable = page.nextPageable();
+    } while (page.hasNext());
   }
 }

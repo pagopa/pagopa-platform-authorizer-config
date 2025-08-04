@@ -386,7 +386,8 @@ class AuthorizationServiceTest {
     })
     void refreshCachedAuthorizations_200(String domain, String ownerId) {
         // Mocking objects
-        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(TestUtil.getSubscriptionKeyDomains(domain, ownerId != null ? ownerId : "fakedomain"));
+        when(authorizationRepository.findByDomain(eq(domain), any(Pageable.class))).thenReturn(TestUtil.getSubscriptionKeyDomainsPaged(domain, null));
+        when(authorizationRepository.findByDomainAndOwnerId(eq(domain), eq(ownerId), any(Pageable.class))).thenReturn(TestUtil.getSubscriptionKeyDomainsPaged(domain, ownerId));
         when(authorizationRepository.saveAll(anyIterable())).thenAnswer(invocation -> invocation.getArguments()[0]);
         // executing logic
         assertDoesNotThrow(() -> authorizationService.refreshCachedAuthorizations(domain, ownerId));
@@ -399,7 +400,8 @@ class AuthorizationServiceTest {
     })
     void refreshCachedAuthorizations_500(String domain, String ownerId) {
         // Mocking objects
-        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(TestUtil.getSubscriptionKeyDomains(domain, ownerId != null ? ownerId : "fakedomain"));
+        when(authorizationRepository.findByDomain(eq(domain), any(Pageable.class))).thenReturn(TestUtil.getSubscriptionKeyDomainsPaged(domain, null));
+        when(authorizationRepository.findByDomainAndOwnerId(eq(domain), eq(ownerId), any(Pageable.class))).thenReturn(TestUtil.getSubscriptionKeyDomainsPaged(domain, ownerId));
         when(authorizationRepository.saveAll(anyIterable())).thenThrow(QueryTimeoutException.class);
         // executing logic
         AppException exception = assertThrows(AppException.class, () -> authorizationService.refreshCachedAuthorizations(domain, ownerId));
