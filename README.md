@@ -1,11 +1,8 @@
-# Template for Quarkus Microservice project
+# pagopPA Platform Authorizer Configurator
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TODO-set-your-id&metric=alert_status)](https://sonarcloud.io/dashboard?id=TODO-set-your-id)
+A microservice that provides a set of APIs to manage authorization records for the Authorizer system.
 
-## TODO List
-- Add a description 
-- Generate an index with this tool: https://ecotrust-canada.github.io/markdown-toc/
-- Find and solve all the TODOs in this template (e.g. in `.github` folder, `pom.xml` and so on)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-platform-authorizer-config&metric=alert_status)](https://sonarcloud.io/dashboard?id=TODO-set-your-id)
 
 ---
 ## API Documentation 📖
