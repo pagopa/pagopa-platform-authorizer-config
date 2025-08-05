@@ -33,6 +33,19 @@
           }
         } ],
         "responses" : {
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "OK",
             "content" : {
@@ -48,19 +61,6 @@
           },
           "403" : {
             "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "404" : {
-            "description" : "Not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           },
           "500" : {
             "description" : "Service unavailable",
@@ -101,6 +101,19 @@
           "required" : true
         },
         "responses" : {
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "OK",
             "content" : {
@@ -116,19 +129,6 @@
           },
           "403" : {
             "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "404" : {
-            "description" : "Not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           },
           "500" : {
             "description" : "Service unavailable",
@@ -168,17 +168,8 @@
           }
         } ],
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
           "429" : {
             "description" : "Too many requests"
-          },
-          "200" : {
-            "description" : "OK"
           },
           "404" : {
             "description" : "Not found",
@@ -189,6 +180,15 @@
                 }
               }
             }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "200" : {
+            "description" : "OK"
           },
           "500" : {
             "description" : "Service unavailable",
@@ -229,20 +229,20 @@
           }
         } ],
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
           "429" : {
             "description" : "Too many requests"
+          },
+          "401" : {
+            "description" : "Unauthorized"
           },
           "200" : {
             "description" : "OK",
             "content" : {
               "application/json" : { }
             }
+          },
+          "403" : {
+            "description" : "Forbidden"
           },
           "500" : {
             "description" : "Service unavailable",
@@ -305,6 +305,9 @@
           }
         } ],
         "responses" : {
+          "429" : {
+            "description" : "Too many requests"
+          },
           "200" : {
             "description" : "OK",
             "content" : {
@@ -320,9 +323,6 @@
           },
           "403" : {
             "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
           },
           "500" : {
             "description" : "Service unavailable",
@@ -354,15 +354,8 @@
           "required" : true
         },
         "responses" : {
-          "409" : {
-            "description" : "Conflict",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "429" : {
+            "description" : "Too many requests"
           },
           "200" : {
             "description" : "OK",
@@ -377,11 +370,18 @@
           "401" : {
             "description" : "Unauthorized"
           },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "403" : {
             "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
           },
           "500" : {
             "description" : "Service unavailable",
@@ -405,11 +405,8 @@
         "summary" : "Return OK if application is started",
         "operationId" : "healthCheck",
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
+          "429" : {
+            "description" : "Too many requests"
           },
           "400" : {
             "description" : "Bad Request",
@@ -421,8 +418,8 @@
               }
             }
           },
-          "429" : {
-            "description" : "Too many requests"
+          "401" : {
+            "description" : "Unauthorized"
           },
           "200" : {
             "description" : "OK",
@@ -433,6 +430,9 @@
                 }
               }
             }
+          },
+          "403" : {
+            "description" : "Forbidden"
           },
           "500" : {
             "description" : "Service unavailable",
@@ -491,12 +491,6 @@
           }
         } ],
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
           "429" : {
             "description" : "Too many requests"
           },
@@ -509,6 +503,12 @@
                 }
               }
             }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
           },
           "500" : {
             "description" : "Service unavailable",
@@ -541,6 +541,19 @@
           }
         } ],
         "responses" : {
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "OK",
             "content" : {
@@ -556,19 +569,6 @@
           },
           "403" : {
             "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "404" : {
-            "description" : "Not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           },
           "500" : {
             "description" : "Service unavailable",
@@ -733,6 +733,28 @@
         },
         "description" : "The information about the owner of the authorization. These information are required in order to make maintenance easier and performs some kind of search operations."
       },
+      "ProblemJson" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string",
+            "description" : "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
+          },
+          "status" : {
+            "maximum" : 600,
+            "minimum" : 100,
+            "type" : "integer",
+            "description" : "The HTTP status code generated by the origin server for this occurrence of the problem.",
+            "format" : "int32",
+            "example" : 200
+          },
+          "detail" : {
+            "type" : "string",
+            "description" : "A human readable explanation specific to this occurrence of the problem.",
+            "example" : "There was an error processing the request"
+          }
+        }
+      },
       "AuthorizationList" : {
         "required" : [ "authorizations", "page_info" ],
         "type" : "object",
@@ -775,28 +797,6 @@
           }
         },
         "description" : "The information related to the paginated results."
-      },
-      "ProblemJson" : {
-        "type" : "object",
-        "properties" : {
-          "title" : {
-            "type" : "string",
-            "description" : "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
-          },
-          "status" : {
-            "maximum" : 600,
-            "minimum" : 100,
-            "type" : "integer",
-            "description" : "The HTTP status code generated by the origin server for this occurrence of the problem.",
-            "format" : "int32",
-            "example" : 200
-          },
-          "detail" : {
-            "type" : "string",
-            "description" : "A human readable explanation specific to this occurrence of the problem.",
-            "example" : "There was an error processing the request"
-          }
-        }
       },
       "AppInfo" : {
         "type" : "object",

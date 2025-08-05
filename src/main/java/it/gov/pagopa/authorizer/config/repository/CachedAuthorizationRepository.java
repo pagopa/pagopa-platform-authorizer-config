@@ -35,12 +35,12 @@ public class CachedAuthorizationRepository {
   }
 
   private String getAPIMStoreVarKey(String domain, String customKeyFormat) {
-    String key = customKeyFormat != null ? customKeyFormat : lockRefreshAuthorizationFormat;
+    String key = customKeyFormat != null ? String.format("%s_authorizer_%%s", customKeyFormat) : lockRefreshAuthorizationFormat;
     return String.format(key, domain);
   }
 
   private String getAPIMKey(String domain, String subscriptionKey, String customKeyFormat) {
-    String key = customKeyFormat != null ? customKeyFormat : cachedAuthorizationFormat;
+    String key = customKeyFormat != null ? String.format("%s_authorizer_%%s", customKeyFormat) : cachedAuthorizationFormat;
     return String.format(key, domain, subscriptionKey);
   }
 }
