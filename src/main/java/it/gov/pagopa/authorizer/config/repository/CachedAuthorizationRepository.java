@@ -22,23 +22,25 @@ public class CachedAuthorizationRepository {
   @Qualifier("object")
   private RedisTemplate<String, Object> template;
 
-  public Long getTTL(String domain) {
-    return template.getExpire(getAPIMStoreVarKey(domain), TimeUnit.SECONDS);
+  public Long getTTL(String domain, String customKeyFormat) {
+    return template.getExpire(getAPIMStoreVarKey(domain, customKeyFormat), TimeUnit.SECONDS);
   }
 
-  public Long getTTL(String domain, String subscriptionKey) {
-    return template.getExpire(getAPIMKey(domain, subscriptionKey), TimeUnit.SECONDS);
+  public Long getTTL(String domain, String subscriptionKey, String customKeyFormat) {
+    return template.getExpire(getAPIMKey(domain, subscriptionKey, customKeyFormat), TimeUnit.SECONDS);
   }
 
-  public void remove(String domain, String subscriptionKey) {
-    template.delete(getAPIMKey(domain, subscriptionKey));
+  public void remove(String domain, String subscriptionKey, String customKeyFormat) {
+    template.delete(getAPIMKey(domain, subscriptionKey, customKeyFormat));
   }
 
-  private String getAPIMStoreVarKey(String domain) {
-    return String.format(lockRefreshAuthorizationFormat, domain);
+  private String getAPIMStoreVarKey(String domain, String customKeyFormat) {
+    String key = customKeyFormat != null ? customKeyFormat : lockRefreshAuthorizationFormat;
+    return String.format(key, domain);
   }
 
-  private String getAPIMKey(String domain, String subscriptionKey) {
-    return String.format(cachedAuthorizationFormat, domain, subscriptionKey);
+  private String getAPIMKey(String domain, String subscriptionKey, String customKeyFormat) {
+    String key = customKeyFormat != null ? customKeyFormat : cachedAuthorizationFormat;
+    return String.format(key, domain, subscriptionKey);
   }
 }

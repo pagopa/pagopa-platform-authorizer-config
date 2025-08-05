@@ -128,25 +128,25 @@ public class AuthorizationService {
     return modelMapper.map(existingSubscriptionKeyDomain, Authorization.class);
   }
 
-  public void deleteAuthorization(@NotNull String authorizationId) {
+  public void deleteAuthorization(@NotNull String authorizationId, String customKeyFormat) {
     SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, authorizationId));
     String domain = existingSubscriptionKeyDomain.getDomain();
     String subscriptionKey = existingSubscriptionKeyDomain.getSubkey();
     // save and return the final object
     try {
       authorizationRepository.delete(existingSubscriptionKeyDomain);
-      cachedAuthorizationRepository.remove(domain, subscriptionKey);
+      cachedAuthorizationRepository.remove(domain, subscriptionKey, customKeyFormat);
     } catch (DataAccessException e) {
       log.error("An error occurred while deleting the authorization.", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR_DELETE);
     }
   }
 
-  public CachedAuthorizationList getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL) {
+  public CachedAuthorizationList getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL, String customKeyFormat) {
     List<CachedAuthorization> cachedAuthorizations = new LinkedList<>();
     List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
     // insert info about STORE's locking variable
-    Long storeVariableTTL = cachedAuthorizationRepository.getTTL(domain);
+    Long storeVariableTTL = cachedAuthorizationRepository.getTTL(domain, customKeyFormat);
     String storeVariableTTLAsString = "Expired";
     if (storeVariableTTL != null) {
       storeVariableTTLAsString = convertTTL ? CommonUtil.convertTTLToString(storeVariableTTL) : Long.toString(storeVariableTTL);
@@ -158,7 +158,7 @@ public class AuthorizationService {
     // insert info about all cached authorizations
     for (SubscriptionKeyDomain entity : entities) {
       String subscriptionKey = entity.getSubkey();
-      Long ttl = cachedAuthorizationRepository.getTTL(domain, subscriptionKey);
+      Long ttl = cachedAuthorizationRepository.getTTL(domain, subscriptionKey, customKeyFormat);
       if (ttl != null && ttl > 0) {
         cachedAuthorizations.add(CachedAuthorization.builder()
             .owner(entity.getOwnerId())
