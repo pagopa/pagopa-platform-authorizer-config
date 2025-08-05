@@ -218,7 +218,7 @@ public class AuthorizationController {
       @Parameter(description = "The identifier of the stored authorization.", required = true)
       @PathVariable("authorizationId") String authorizationId,
       @Parameter(description = "Custom key for cache used by APIM")
-      @RequestParam(value = "customKeyFormat", required = false, defaultValue = "") String customKeyFormat) {
+      @RequestParam(value = "customKeyFormat", required = false) String customKeyFormat) {
     authorizationService.deleteAuthorization(authorizationId, customKeyFormat);
     return ResponseEntity.noContent().build();
   }

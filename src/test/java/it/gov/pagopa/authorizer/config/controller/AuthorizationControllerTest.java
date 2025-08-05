@@ -267,7 +267,7 @@ class AuthorizationControllerTest {
     String id = "some-uuid";
     String url = String.format("/authorizations/%s", id);
     // mocking invocation
-    doThrow(new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, id)).when(authorizationService).deleteAuthorization(anyString(), anyString());
+    doThrow(new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, id)).when(authorizationService).deleteAuthorization(anyString(), any());
     // executing API call
     mvc.perform(delete(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound())

@@ -44,7 +44,7 @@ class CachedAuthorizationControllerTest {
     void getAuthorizations_200(String domain, Boolean formatTTL, String ownerId) throws Exception {
         String url = String.format("/cachedauthorizations?domain=%s&ownerId=%s&formatTTL=%s", domain, ownerId == null ? "" : ownerId, formatTTL == null ? "" : formatTTL);
         // mocking invocation
-        when(authorizationService.getCachedAuthorization(anyString(), anyString(), anyBoolean(), anyString()))
+        when(authorizationService.getCachedAuthorization(anyString(), anyString(), anyBoolean(), any()))
                 .thenReturn(TestUtil.getCachedAuthorizationList(domain, ownerId, formatTTL == null || formatTTL));
         // executing API call
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
