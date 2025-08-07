@@ -44,7 +44,7 @@ class CachedAuthorizationControllerTest {
     void getAuthorizations_200(String domain, Boolean formatTTL, String ownerId) throws Exception {
         String url = String.format("/cachedauthorizations?domain=%s&ownerId=%s&formatTTL=%s", domain, ownerId == null ? "" : ownerId, formatTTL == null ? "" : formatTTL);
         // mocking invocation
-        when(authorizationService.getCachedAuthorization(anyString(), anyString(), anyBoolean()))
+        when(authorizationService.getCachedAuthorization(anyString(), anyString(), anyBoolean(), any()))
                 .thenReturn(TestUtil.getCachedAuthorizationList(domain, ownerId, formatTTL == null || formatTTL));
         // executing API call
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
@@ -52,9 +52,14 @@ class CachedAuthorizationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    @Test
-    void refreshCachedAuthorizations_200() throws Exception {
-        String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", "fakedomain", "77777777777");
+
+    @ParameterizedTest
+    @CsvSource({
+            "fakedomain,",
+            "fakedomain,77777777777",
+    })
+    void refreshCachedAuthorizations_200(String domain, String ownerId) throws Exception {
+        String url = ownerId == null ? String.format("/cachedauthorizations/%s/refresh", domain) : String.format("/cachedauthorizations/%s/refresh?ownerId=%s", domain, ownerId);
         // mocking invocation
         doNothing().when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
         // executing API call
@@ -62,11 +67,15 @@ class CachedAuthorizationControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void refreshCachedAuthorizations_500() throws Exception {
-        String url = String.format("/cachedauthorizations/%s/refresh?ownerId=%s", "fakedomain", "77777777777");
+    @ParameterizedTest
+    @CsvSource({
+            "fakedomain,",
+            "fakedomain,77777777777",
+    })
+    void refreshCachedAuthorizations_500(String domain, String ownerId) throws Exception {
+        String url = ownerId == null ? String.format("/cachedauthorizations/%s/refresh", domain) : String.format("/cachedauthorizations/%s/refresh?ownerId=%s", domain, ownerId);
         // mocking invocation
-        doThrow(new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH)).when(authorizationService).refreshCachedAuthorizations(anyString(), anyString());
+        doThrow(new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH)).when(authorizationService).refreshCachedAuthorizations(anyString(), any());
         // executing API call
         mvc.perform(post(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());

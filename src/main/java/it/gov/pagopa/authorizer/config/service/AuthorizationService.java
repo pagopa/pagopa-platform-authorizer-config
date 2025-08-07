@@ -14,8 +14,10 @@ import it.gov.pagopa.authorizer.config.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,12 @@ public class AuthorizationService {
 
   @Autowired
   private ModelMapper modelMapper;
+
+  @Value("${authorizer.configuration.limit}")
+  private Integer configurationLimit;
+
+  @Value("${authorizer.configuration.offset}")
+  private Integer configurationOffset;
 
   public AuthorizationList getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
     Page<SubscriptionKeyDomain> page;
@@ -120,25 +128,25 @@ public class AuthorizationService {
     return modelMapper.map(existingSubscriptionKeyDomain, Authorization.class);
   }
 
-  public void deleteAuthorization(@NotNull String authorizationId) {
+  public void deleteAuthorization(@NotNull String authorizationId, String customKeyFormat) {
     SubscriptionKeyDomain existingSubscriptionKeyDomain = authorizationRepository.findById(authorizationId).orElseThrow(() -> new AppException(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION, authorizationId));
     String domain = existingSubscriptionKeyDomain.getDomain();
     String subscriptionKey = existingSubscriptionKeyDomain.getSubkey();
     // save and return the final object
     try {
       authorizationRepository.delete(existingSubscriptionKeyDomain);
-      cachedAuthorizationRepository.remove(domain, subscriptionKey);
+      cachedAuthorizationRepository.remove(domain, subscriptionKey, customKeyFormat);
     } catch (DataAccessException e) {
       log.error("An error occurred while deleting the authorization.", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR_DELETE);
     }
   }
 
-  public CachedAuthorizationList getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL) {
+  public CachedAuthorizationList getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL, String customKeyFormat) {
     List<CachedAuthorization> cachedAuthorizations = new LinkedList<>();
     List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
     // insert info about STORE's locking variable
-    Long storeVariableTTL = cachedAuthorizationRepository.getTTL(domain);
+    Long storeVariableTTL = cachedAuthorizationRepository.getTTL(domain, customKeyFormat);
     String storeVariableTTLAsString = "Expired";
     if (storeVariableTTL != null) {
       storeVariableTTLAsString = convertTTL ? CommonUtil.convertTTLToString(storeVariableTTL) : Long.toString(storeVariableTTL);
@@ -150,7 +158,7 @@ public class AuthorizationService {
     // insert info about all cached authorizations
     for (SubscriptionKeyDomain entity : entities) {
       String subscriptionKey = entity.getSubkey();
-      Long ttl = cachedAuthorizationRepository.getTTL(domain, subscriptionKey);
+      Long ttl = cachedAuthorizationRepository.getTTL(domain, subscriptionKey, customKeyFormat);
       if (ttl != null && ttl > 0) {
         cachedAuthorizations.add(CachedAuthorization.builder()
             .owner(entity.getOwnerId())
@@ -164,17 +172,29 @@ public class AuthorizationService {
         .build();
   }
 
-  public void refreshCachedAuthorizations(@NotNull String domain, @NotBlank String ownerId) {
-    List<SubscriptionKeyDomain> entities = authorizationRepository.findByDomainAndOwnerId(domain, ownerId);
+  public void refreshCachedAuthorizations(@NotNull String domain, String ownerId) {
+    Pageable pageable = PageRequest.of(configurationOffset, configurationLimit);
+    Page<SubscriptionKeyDomain> page;
     String now = LocalDateTime.now().format(Constants.DATE_FORMATTER);
-    for (SubscriptionKeyDomain entity : entities) {
-      entity.setLastForcedRefresh(now);
-    }
-    try {
-      authorizationRepository.saveAll(entities);
-    } catch (DataAccessException e) {
-      log.error("An error occurred while refreshing cached authorizations. ", e);
-      throw new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH);
-    }
+
+    do {
+      page = ownerId == null
+              ? authorizationRepository.findByDomain(domain, pageable)
+              : authorizationRepository.findByDomainAndOwnerId(domain, ownerId, pageable);
+
+      List<SubscriptionKeyDomain> entities = page.getContent();
+      for (SubscriptionKeyDomain entity : entities) {
+        entity.setLastForcedRefresh(now);
+      }
+
+      try {
+        authorizationRepository.saveAll(entities);
+      } catch (DataAccessException e) {
+        log.error("An error occurred while refreshing cached authorizations.", e);
+        throw new AppException(AppError.INTERNAL_SERVER_ERROR_REFRESH);
+      }
+
+      pageable = page.nextPageable();
+    } while (page.hasNext());
   }
 }

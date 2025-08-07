@@ -216,8 +216,10 @@ public class AuthorizationController {
   @DeleteMapping(value = "/{authorizationId}", produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Authorization> deleteAuthorization(
       @Parameter(description = "The identifier of the stored authorization.", required = true)
-      @PathVariable("authorizationId") String authorizationId) {
-    authorizationService.deleteAuthorization(authorizationId);
+      @PathVariable("authorizationId") String authorizationId,
+      @Parameter(description = "Custom key for cache used by APIM")
+      @RequestParam(value = "customKeyFormat", required = false) String customKeyFormat) {
+    authorizationService.deleteAuthorization(authorizationId, customKeyFormat);
     return ResponseEntity.noContent().build();
   }
 }

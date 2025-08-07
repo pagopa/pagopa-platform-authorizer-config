@@ -59,8 +59,10 @@ public class CachedAuthorizationController {
       @Parameter(description = "The identifier of the authorizations' owner.")
       @RequestParam(value = "ownerId", required = false) String ownerId,
       @Parameter(description = "The identifier of the authorizations' owner.")
-      @RequestParam(value = "formatTTL", required = false, defaultValue = "true") Boolean formatTTL) {
-    return ResponseEntity.ok(authorizationService.getCachedAuthorization(domain, ownerId, formatTTL == null || formatTTL));
+      @RequestParam(value = "formatTTL", required = false, defaultValue = "true") Boolean formatTTL,
+      @Parameter(description = "Custom key for cache used by APIM")
+      @RequestParam(value = "customKeyFormat", required = false) String customKeyFormat) {
+    return ResponseEntity.ok(authorizationService.getCachedAuthorization(domain, ownerId, formatTTL == null || formatTTL, customKeyFormat));
   }
 
 
@@ -89,8 +91,8 @@ public class CachedAuthorizationController {
   public ResponseEntity<Authorization> refreshCachedAuthorizations(
       @Parameter(description = "The domain on which the authorizations will be filtered.", required = true)
       @NotBlank @PathVariable("domain") String domain,
-      @Parameter(description = "The identifier of the authorizations' owner.", required = true)
-      @NotBlank @RequestParam(value = "ownerId") String ownerId) {
+      @Parameter(description = "The identifier of the authorizations' owner.")
+      @RequestParam(value = "ownerId", required = false) String ownerId) {
     authorizationService.refreshCachedAuthorizations(domain, ownerId);
     return ResponseEntity.ok().build();
   }

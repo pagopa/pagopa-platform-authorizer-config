@@ -287,9 +287,9 @@ class AuthorizationServiceTest {
         // Mocking objects
         when(authorizationRepository.findById(id)).thenReturn(Optional.ofNullable(TestUtil.getSubscriptionKeyDomain(1, id, "gpd", "fakedomain")));
         doNothing().when(authorizationRepository).delete(any(SubscriptionKeyDomain.class));
-        doNothing().when(cachedAuthorizationRepository).remove(anyString(), anyString());
+        doNothing().when(cachedAuthorizationRepository).remove(anyString(), anyString(), anyString());
         // executing logic
-        assertDoesNotThrow(() -> authorizationService.deleteAuthorization(id));
+        assertDoesNotThrow(() -> authorizationService.deleteAuthorization(id, null));
     }
 
     @Test
@@ -299,7 +299,7 @@ class AuthorizationServiceTest {
         // Mocking objects
         when(authorizationRepository.findById(id)).thenReturn(Optional.empty());
         // executing logic
-        AppException exception = assertThrows(AppException.class, () -> authorizationService.deleteAuthorization(id));
+        AppException exception = assertThrows(AppException.class, () -> authorizationService.deleteAuthorization(id, null));
         // executing assertion check
         assertEquals(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION.httpStatus, exception.getHttpStatus());
         assertEquals(AppError.NOT_FOUND_NO_VALID_AUTHORIZATION.title, exception.getTitle());
@@ -313,7 +313,7 @@ class AuthorizationServiceTest {
         when(authorizationRepository.findById(id)).thenReturn(Optional.ofNullable(TestUtil.getSubscriptionKeyDomain(1, id, "gpd", "fakedomain")));
         doThrow(QueryTimeoutException.class).when(authorizationRepository).delete(any(SubscriptionKeyDomain.class));
         // executing logic
-        AppException exception = assertThrows(AppException.class, () -> authorizationService.deleteAuthorization(id));
+        AppException exception = assertThrows(AppException.class, () -> authorizationService.deleteAuthorization(id, null));
         // executing assertion check
         assertEquals(AppError.INTERNAL_SERVER_ERROR.httpStatus, exception.getHttpStatus());
         assertEquals(AppError.INTERNAL_SERVER_ERROR.title, exception.getTitle());
@@ -329,10 +329,11 @@ class AuthorizationServiceTest {
     void getCachedAuthorization_200(String domain, String ownerId, boolean convertTTL) {
         // Mocking objects
         when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(TestUtil.getSubscriptionKeyDomains(domain, ownerId));
-        when(cachedAuthorizationRepository.getTTL(domain)).thenReturn(1000L);
-        when(cachedAuthorizationRepository.getTTL(anyString(), anyString())).thenReturn(1200L);
+        when(cachedAuthorizationRepository.getTTL(eq(domain), any())).thenReturn(1000L);
+        when(cachedAuthorizationRepository.getTTL(anyString(), any(), any())).thenReturn(1200L);
+
         // executing logic
-        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL);
+        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL, null);
         // executing assertion check
         assertNotNull(result.getCachedAuthorizations());
         assertTrue(result.getCachedAuthorizations().size() > 0);
@@ -350,9 +351,9 @@ class AuthorizationServiceTest {
     void getCachedAuthorization_200_noAuthorization(String domain, String ownerId, boolean convertTTL) {
         // Mocking objects
         when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(List.of());
-        when(cachedAuthorizationRepository.getTTL(domain)).thenReturn(1000L);
+        when(cachedAuthorizationRepository.getTTL(domain, null)).thenReturn(1000L);
         // executing logic
-        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL);
+        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL, null);
         // executing assertion check
         assertNotNull(result.getCachedAuthorizations());
         assertEquals(1, result.getCachedAuthorizations().size());
@@ -369,9 +370,9 @@ class AuthorizationServiceTest {
     void getCachedAuthorization_200_expiredDomain(String domain, String ownerId, boolean convertTTL) {
         // Mocking objects
         when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(List.of());
-        when(cachedAuthorizationRepository.getTTL(domain)).thenReturn(null);
+        when(cachedAuthorizationRepository.getTTL(domain, null)).thenReturn(null);
         // executing logic
-        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL);
+        CachedAuthorizationList result = authorizationService.getCachedAuthorization(domain, ownerId, convertTTL, null);
         // executing assertion check
         assertNotNull(result.getCachedAuthorizations());
         assertEquals(1, result.getCachedAuthorizations().size());
@@ -386,7 +387,8 @@ class AuthorizationServiceTest {
     })
     void refreshCachedAuthorizations_200(String domain, String ownerId) {
         // Mocking objects
-        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(TestUtil.getSubscriptionKeyDomains(domain, ownerId != null ? ownerId : "fakedomain"));
+        when(authorizationRepository.findByDomain(eq(domain), any(Pageable.class))).thenReturn(TestUtil.getSubscriptionKeyDomainsPaged(domain, null));
+        when(authorizationRepository.findByDomainAndOwnerId(eq(domain), eq(ownerId), any(Pageable.class))).thenReturn(TestUtil.getSubscriptionKeyDomainsPaged(domain, ownerId));
         when(authorizationRepository.saveAll(anyIterable())).thenAnswer(invocation -> invocation.getArguments()[0]);
         // executing logic
         assertDoesNotThrow(() -> authorizationService.refreshCachedAuthorizations(domain, ownerId));
@@ -399,7 +401,8 @@ class AuthorizationServiceTest {
     })
     void refreshCachedAuthorizations_500(String domain, String ownerId) {
         // Mocking objects
-        when(authorizationRepository.findByDomainAndOwnerId(domain, ownerId)).thenReturn(TestUtil.getSubscriptionKeyDomains(domain, ownerId != null ? ownerId : "fakedomain"));
+        when(authorizationRepository.findByDomain(eq(domain), any(Pageable.class))).thenReturn(TestUtil.getSubscriptionKeyDomainsPaged(domain, null));
+        when(authorizationRepository.findByDomainAndOwnerId(eq(domain), eq(ownerId), any(Pageable.class))).thenReturn(TestUtil.getSubscriptionKeyDomainsPaged(domain, ownerId));
         when(authorizationRepository.saveAll(anyIterable())).thenThrow(QueryTimeoutException.class);
         // executing logic
         AppException exception = assertThrows(AppException.class, () -> authorizationService.refreshCachedAuthorizations(domain, ownerId));

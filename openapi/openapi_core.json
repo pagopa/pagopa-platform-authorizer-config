@@ -4,7 +4,7 @@
     "title": "platform-authorizer-config",
     "description": "A microservice that provides a set of APIs to manage authorization records for the Authorizer system.",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.2.13"
+    "version": "0.2.13-2-PIDM-759-improvements"
   },
   "servers": [
     {
@@ -42,8 +42,11 @@
           }
         ],
         "responses": {
-          "500": {
-            "description": "Service unavailable",
+          "429": {
+            "description": "Too many requests"
+          },
+          "404": {
+            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -62,8 +65,14 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Service unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -71,15 +80,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "429": {
-            "description": "Too many requests"
           }
         },
         "security": [
@@ -116,8 +116,11 @@
           "required": true
         },
         "responses": {
-          "500": {
-            "description": "Service unavailable",
+          "429": {
+            "description": "Too many requests"
+          },
+          "404": {
+            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -136,8 +139,14 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Service unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -145,15 +154,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "429": {
-            "description": "Too many requests"
           }
         },
         "security": [
@@ -177,18 +177,21 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "customKeyFormat",
+            "in": "query",
+            "description": "Custom key for cache used by APIM",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
           }
         ],
         "responses": {
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "429": {
+            "description": "Too many requests"
           },
           "404": {
             "description": "Not found",
@@ -200,17 +203,24 @@
               }
             }
           },
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
           },
-          "429": {
-            "description": "Too many requests"
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -241,13 +251,28 @@
             "name": "ownerId",
             "in": "query",
             "description": "The identifier of the authorizations' owner.",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too many requests"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -257,21 +282,6 @@
                 }
               }
             }
-          },
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {}
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "429": {
-            "description": "Too many requests"
           }
         },
         "security": [
@@ -333,15 +343,8 @@
           }
         ],
         "responses": {
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "429": {
+            "description": "Too many requests"
           },
           "200": {
             "description": "OK",
@@ -359,8 +362,15 @@
           "403": {
             "description": "Forbidden"
           },
-          "429": {
-            "description": "Too many requests"
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -386,25 +396,8 @@
           "required": true
         },
         "responses": {
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "429": {
+            "description": "Too many requests"
           },
           "200": {
             "description": "OK",
@@ -419,11 +412,28 @@
           "401": {
             "description": "Unauthorized"
           },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "403": {
             "description": "Forbidden"
           },
-          "429": {
-            "description": "Too many requests"
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -441,15 +451,8 @@
         "summary": "Return OK if application is started",
         "operationId": "healthCheck",
         "responses": {
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "429": {
+            "description": "Too many requests"
           },
           "400": {
             "description": "Bad Request",
@@ -461,6 +464,9 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -471,14 +477,18 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized"
-          },
           "403": {
             "description": "Forbidden"
           },
-          "429": {
-            "description": "Too many requests"
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -523,18 +533,21 @@
               "type": "boolean",
               "default": true
             }
+          },
+          {
+            "name": "customKeyFormat",
+            "in": "query",
+            "description": "Custom key for cache used by APIM",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
           }
         ],
         "responses": {
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "429": {
+            "description": "Too many requests"
           },
           "200": {
             "description": "OK",
@@ -552,8 +565,15 @@
           "403": {
             "description": "Forbidden"
           },
-          "429": {
-            "description": "Too many requests"
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -582,8 +602,11 @@
           }
         ],
         "responses": {
-          "500": {
-            "description": "Service unavailable",
+          "429": {
+            "description": "Too many requests"
+          },
+          "404": {
+            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -602,8 +625,14 @@
               }
             }
           },
-          "404": {
-            "description": "Not found",
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Service unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -611,15 +640,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "429": {
-            "description": "Too many requests"
           }
         },
         "security": [
