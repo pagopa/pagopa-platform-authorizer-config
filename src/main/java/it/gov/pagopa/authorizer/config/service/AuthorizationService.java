@@ -241,7 +241,10 @@ public class AuthorizationService {
     authorizedEntities.setCreatedAt(LocalDateTime.now());
     // If something is found, store the list of authorized entities in Redis storage
     if (!authorizedEntitiesByDomain.isEmpty()) {
-      cachedAuthorizationRepository.save(String.format(authorizedEntitiesDomainsKeyFormat, domain), rawMapper.writeValueAsString(authorizedEntities), authorizedEntitiesTTL);
+      cachedAuthorizationRepository.save(
+              String.format(authorizedEntitiesDomainsKeyFormat, domain),
+              rawMapper.writeValueAsString(authorizedEntities),
+              authorizedEntitiesTTL);
     }
     return authorizedEntities;
   }
