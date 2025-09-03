@@ -23,7 +23,6 @@ import org.springframework.dao.QueryTimeoutException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.Optional;
 
@@ -287,7 +286,7 @@ class AuthorizationServiceTest {
         // Mocking objects
         when(authorizationRepository.findById(id)).thenReturn(Optional.ofNullable(TestUtil.getSubscriptionKeyDomain(1, id, "gpd", "fakedomain")));
         doNothing().when(authorizationRepository).delete(any(SubscriptionKeyDomain.class));
-        doNothing().when(cachedAuthorizationRepository).remove(anyString(), anyString(), anyString());
+        doNothing().when(cachedAuthorizationRepository).removeSubscriptionKey(anyString(), anyString(), anyString());
         // executing logic
         assertDoesNotThrow(() -> authorizationService.deleteAuthorization(id, null));
     }
