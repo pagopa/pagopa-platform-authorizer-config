@@ -27,6 +27,7 @@ import org.springframework.dao.QueryTimeoutException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -473,7 +474,7 @@ class AuthorizationServiceTest {
         String domain = "fake-domain";
         int size = 0;
         when(cachedAuthorizationRepository.read(domain)).thenReturn(Set.of());
-        when(authorizationRepository.findAuthorizedEntitiesByDomain(domain)).thenReturn(Set.of());
+        when(authorizationRepository.findAuthorizedEntitiesByDomain(domain)).thenReturn(new HashSet<>());
         // executing logic
         AuthorizedEntityList result = authorizationService.getAuthorizedEntitiesByDomain(domain);
         // executing assertion check
