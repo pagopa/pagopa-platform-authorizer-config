@@ -23,10 +23,8 @@ import org.springframework.data.domain.PageImpl;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -268,5 +266,23 @@ public class TestUtil {
                     .build();
         }
         return result;
+    }
+
+
+    public AuthorizedEntityList getAuthorizedEntities(String domain, int size) {
+        return AuthorizedEntityList.builder()
+                .size(size)
+                .createdAt(LocalDateTime.now())
+                .domain(domain)
+                .authorizedEntities(getAuthorizedEntitiesIdentifiers(size))
+                .build();
+    }
+
+    public Set<String> getAuthorizedEntitiesIdentifiers(int number) {
+        Set<String> authorizedEntitiesIdentifiers = new HashSet<>();
+        for (int i = 0; i < number; i ++) {
+            authorizedEntitiesIdentifiers.add(String.format("%07d", i));
+        }
+        return authorizedEntitiesIdentifiers;
     }
 }
