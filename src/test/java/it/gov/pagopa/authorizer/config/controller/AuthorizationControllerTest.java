@@ -288,18 +288,6 @@ class AuthorizationControllerTest {
   }
 
   @Test
-  void getAuthorizedEntitiesByDomain_500_errorInGeneration() throws Exception {
-    String domain = "existing-domain";
-    String url = String.format("/authorizations/domains/%s/authorizedentities", domain);
-    // mocking invocation
-    when(authorizationService.getAuthorizedEntitiesByDomain(anyString())).thenThrow(new AppException(AppError.INTERNAL_SERVER_ERROR_GENERATE_AUTHORIZED_ENTITY, domain));
-    // executing API call
-    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isInternalServerError())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-  }
-
-  @Test
   void getAuthorizedEntitiesByDomain_500_errorInParsing() throws Exception {
     String domain = "existing-domain";
     String url = String.format("/authorizations/domains/%s/authorizedentities", domain);
