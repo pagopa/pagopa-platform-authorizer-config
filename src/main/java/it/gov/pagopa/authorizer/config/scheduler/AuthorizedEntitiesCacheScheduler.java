@@ -34,9 +34,9 @@ public class AuthorizedEntitiesCacheScheduler {
         for (String domain : authorizedEntitiesDomains) {
             if (lockForDomain(domain)) {
                 try {
-                    log.info("Starting autogeneration the list of authorized entities for domain [{}]...", domain);
+                    log.debug("Starting autogeneration the list of authorized entities for domain [{}]...", domain);
                     authorizationService.saveAuthorizedEntitiesInCache(domain);
-                    log.info("Autogeneration of the list of authorized entities for domain [{}] completed!", domain);
+                    log.debug("Autogeneration of the list of authorized entities for domain [{}] completed!", domain);
                 } catch (Exception e) {
                     log.error("An error occurred while autogenerating the list of authorized entities by domain.", e);
                 } finally {
