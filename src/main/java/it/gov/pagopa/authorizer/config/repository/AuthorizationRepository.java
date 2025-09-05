@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface AuthorizationRepository extends CosmosRepository<SubscriptionKeyDomain, String> {
@@ -20,6 +21,9 @@ public interface AuthorizationRepository extends CosmosRepository<SubscriptionKe
   List<SubscriptionKeyDomain> findByDomainAndOwnerId(@Param("domain") String domain, @Param("ownerId") String ownerId);
 
   List<SubscriptionKeyDomain> findByDomain(String domain);
+
+  @Query("SELECT DISTINCT VALUE e[\"value\"] FROM s JOIN e IN s.authorizedEntities WHERE s.domain = @domain")
+  Set<String> findAuthorizedEntitiesByDomain(String domain);
 
   Optional<SubscriptionKeyDomain> findBySubkey(String subkey);
 

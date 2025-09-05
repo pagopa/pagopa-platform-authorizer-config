@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -22,6 +24,22 @@ public class CachedAuthorizationRepository {
   @Qualifier("object")
   private RedisTemplate<String, Object> template;
 
+  public Object read(String key) {
+    return template.opsForValue().get(key);
+  }
+
+  public void save(String key, Object value, long ttlInSeconds) {
+    template.opsForValue().set(key, value, Duration.of(ttlInSeconds, TimeUnit.SECONDS.toChronoUnit()));
+  }
+
+  public boolean saveIfAbsent(String key, Object value, long ttlInSeconds) {
+    return template.opsForValue().setIfAbsent(key, value, Duration.of(ttlInSeconds, TimeUnit.SECONDS.toChronoUnit()));
+  }
+
+  public void remove(String key) {
+    template.delete(key);
+  }
+
   public Long getTTL(String domain, String customKeyFormat) {
     return template.getExpire(getAPIMStoreVarKey(domain, customKeyFormat), TimeUnit.SECONDS);
   }
@@ -30,7 +48,7 @@ public class CachedAuthorizationRepository {
     return template.getExpire(getAPIMKey(domain, subscriptionKey, customKeyFormat), TimeUnit.SECONDS);
   }
 
-  public void remove(String domain, String subscriptionKey, String customKeyFormat) {
+  public void removeSubscriptionKey(String domain, String subscriptionKey, String customKeyFormat) {
     template.delete(getAPIMKey(domain, subscriptionKey, customKeyFormat));
   }
 

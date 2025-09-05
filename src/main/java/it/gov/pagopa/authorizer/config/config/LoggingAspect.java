@@ -3,6 +3,8 @@ package it.gov.pagopa.authorizer.config.config;
 import java.util.Arrays;
 import java.util.stream.StreamSupport;
 import javax.annotation.PostConstruct;
+
+import it.gov.pagopa.authorizer.config.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -11,6 +13,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -90,7 +93,14 @@ public class LoggingAspect {
 
   @AfterReturning(value = "restController()", returning = "result")
   public void returnApiInvocation(JoinPoint joinPoint, Object result) {
-    log.info("Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result);
+    String dataResult = result.toString();
+    String maxResponseBodySizeForLog = MDC.get(Constants.MDC_MAX_RESPONSE_BODY_SIZE_FOR_LOG);
+    int maxResponseSize = Integer.parseInt(maxResponseBodySizeForLog != null ? maxResponseBodySizeForLog : "10000000");
+    if (dataResult.length() > maxResponseSize) {
+      dataResult = dataResult.substring(0, maxResponseSize) + "...truncated because size is more than " + maxResponseBodySizeForLog + " characters...";
+      MDC.remove(Constants.MDC_MAX_RESPONSE_BODY_SIZE_FOR_LOG);
+    }
+    log.info("Successful API operation {} - result: {}", joinPoint.getSignature().getName(), dataResult);
   }
 
   @AfterReturning(value = "errorHandler()", returning = "result")
