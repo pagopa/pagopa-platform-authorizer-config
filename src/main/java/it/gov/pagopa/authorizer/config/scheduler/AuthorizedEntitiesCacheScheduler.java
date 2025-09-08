@@ -17,10 +17,8 @@ import java.util.List;
 @Slf4j
 public class AuthorizedEntitiesCacheScheduler {
 
-    @Autowired
     private AuthorizationService authorizationService;
 
-    @Autowired
     private CachedAuthorizationRepository cachedAuthorizationRepository;
 
     @Value("${authorizer.cache.authorized-entities.lock.key-format}")
@@ -28,6 +26,12 @@ public class AuthorizedEntitiesCacheScheduler {
 
     @Value("${authorizer.schedule.authorized-entities.domains}")
     private List<String> authorizedEntitiesDomains;
+
+    public AuthorizedEntitiesCacheScheduler(AuthorizationService authorizationService,
+                                            CachedAuthorizationRepository cachedAuthorizationRepository) {
+        this.authorizationService = authorizationService;
+        this.cachedAuthorizationRepository = cachedAuthorizationRepository;
+    }
 
     @Scheduled(cron = "${authorizer.schedule.authorized-entities.expression}")
     public void autogenerateAuthorizedEntitiesCacheData() {

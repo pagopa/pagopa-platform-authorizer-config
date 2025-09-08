@@ -39,15 +39,19 @@ public class EnrolledOrganizationService {
   @Value("${client.apiconfig-selfcare.uri}")
   private String apiconfigSelfcareIntegrationURI;
 
-  @Autowired
   private AuthorizationRepository authorizationRepository;
 
-  @Autowired
   private ObjectMapper jsonParser;
 
-  @Autowired
-  @Qualifier("apiconfigSelfcareClient")
   private WebClient apiconfigSelfcareClient;
+
+  public EnrolledOrganizationService(AuthorizationRepository authorizationRepository,
+                                     ObjectMapper jsonParser,
+                                     @Qualifier("apiconfigSelfcareClient") WebClient apiconfigSelfcareClient) {
+    this.authorizationRepository = authorizationRepository;
+    this.jsonParser = jsonParser;
+    this.apiconfigSelfcareClient = apiconfigSelfcareClient;
+  }
 
   public EnrolledCreditorInstitutionList getEnrolledOrganizations(@NotNull String domain) {
     List<SubscriptionKeyDomain> subscriptionKeyDomains = authorizationRepository.findByDomain(domain);

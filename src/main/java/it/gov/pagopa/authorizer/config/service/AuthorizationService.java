@@ -36,16 +36,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AuthorizationService {
 
-  @Autowired
   private CachedAuthorizationRepository cachedAuthorizationRepository;
 
-  @Autowired
   private AuthorizationRepository authorizationRepository;
 
-  @Autowired
   private ModelMapper modelMapper;
 
-  @Autowired
   private ObjectMapper rawMapper;
 
   @Value("${authorizer.configuration.limit}")
@@ -59,6 +55,16 @@ public class AuthorizationService {
 
   @Value("${authorizer.cache.authorized-entities.ttl}")
   private Long authorizedEntitiesTTL;
+
+  public AuthorizationService(CachedAuthorizationRepository cachedAuthorizationRepository,
+                              AuthorizationRepository authorizationRepository,
+                              ModelMapper modelMapper,
+                              ObjectMapper rawMapper) {
+    this.cachedAuthorizationRepository = cachedAuthorizationRepository;
+    this.authorizationRepository = authorizationRepository;
+    this.modelMapper = modelMapper;
+    this.rawMapper = rawMapper;
+  }
 
   public AuthorizationList getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
     Page<SubscriptionKeyDomain> page;
