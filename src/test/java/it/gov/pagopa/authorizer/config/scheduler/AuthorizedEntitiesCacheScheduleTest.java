@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = Application.class)
-public class AuthorizedEntitiesCacheScheduleTest {
+class AuthorizedEntitiesCacheScheduleTest {
 
     @MockBean private AuthorizationRepository authorizationRepository;
 
@@ -44,7 +44,7 @@ public class AuthorizedEntitiesCacheScheduleTest {
             "domain1;domain2;domain3,10000",
             "domain1;domain2;domain3;domain4;domain5,50000"
     })
-    public void autogenerateAuthorizedEntitiesCacheData_ok(String rawDomains, String rawSize) {
+    void autogenerateAuthorizedEntitiesCacheData_ok(String rawDomains, String rawSize) {
         // Mocking objects
         List<String> domains = List.of(rawDomains.split(";"));
         int numberOfDomains = domains.size();
@@ -64,7 +64,7 @@ public class AuthorizedEntitiesCacheScheduleTest {
     }
 
     @Test
-    public void autogenerateAuthorizedEntitiesCacheData_ok_noDomains() {
+    void autogenerateAuthorizedEntitiesCacheData_ok_noDomains() {
         // Mocking objects
         ReflectionTestUtils.setField(authorizedEntitiesCacheScheduler, "authorizedEntitiesDomains", List.of());
         // executing logic
@@ -78,7 +78,7 @@ public class AuthorizedEntitiesCacheScheduleTest {
 
     @Test
     @SneakyThrows
-    public void autogenerateAuthorizedEntitiesCacheData_error() {
+    void autogenerateAuthorizedEntitiesCacheData_error() {
         // Mocking objects
         List<String> domains = List.of("domain1", "domain2");
         int numberOfDomains = domains.size();

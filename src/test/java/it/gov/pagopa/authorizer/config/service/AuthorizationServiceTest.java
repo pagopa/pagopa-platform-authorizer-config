@@ -469,7 +469,7 @@ class AuthorizationServiceTest {
     }
 
     @Test
-    void getAuthorizedEntitiesByDomain_200_noData() throws JsonProcessingException {
+    void getAuthorizedEntitiesByDomain_200_noData() {
         // Mocking objects
         String domain = "fake-domain";
         int size = 0;
