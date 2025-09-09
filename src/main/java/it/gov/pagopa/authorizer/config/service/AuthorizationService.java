@@ -1,10 +1,13 @@
 package it.gov.pagopa.authorizer.config.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
 import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
 import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationList;
+import it.gov.pagopa.authorizer.config.model.authorization.AuthorizedEntityList;
 import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorization;
 import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorizationList;
 import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
@@ -21,32 +24,51 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NonUniqueResultException;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class AuthorizationService {
 
-  @Autowired
   private CachedAuthorizationRepository cachedAuthorizationRepository;
 
-  @Autowired
   private AuthorizationRepository authorizationRepository;
 
-  @Autowired
   private ModelMapper modelMapper;
 
-  @Value("${authorizer.configuration.limit}")
+  private ObjectMapper rawMapper;
+
   private Integer configurationLimit;
 
-  @Value("${authorizer.configuration.offset}")
   private Integer configurationOffset;
+
+  private String authorizedEntitiesDomainsKeyFormat;
+
+  private Long authorizedEntitiesTTL;
+
+  public AuthorizationService(CachedAuthorizationRepository cachedAuthorizationRepository,
+                              AuthorizationRepository authorizationRepository,
+                              ModelMapper modelMapper,
+                              ObjectMapper rawMapper,
+                              @Value("${authorizer.configuration.limit}") Integer configurationLimit,
+                              @Value("${authorizer.configuration.offset}") Integer configurationOffset,
+                              @Value("${authorizer.cache.authorized-entities.key-format}") String authorizedEntitiesDomainsKeyFormat,
+                              @Value("${authorizer.cache.authorized-entities.ttl}") Long authorizedEntitiesTTL) {
+    this.cachedAuthorizationRepository = cachedAuthorizationRepository;
+    this.authorizationRepository = authorizationRepository;
+    this.modelMapper = modelMapper;
+    this.rawMapper = rawMapper;
+    this.configurationLimit = configurationLimit;
+    this.configurationOffset = configurationOffset;
+    this.authorizedEntitiesDomainsKeyFormat = authorizedEntitiesDomainsKeyFormat;
+    this.authorizedEntitiesTTL = authorizedEntitiesTTL;
+  }
 
   public AuthorizationList getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {
     Page<SubscriptionKeyDomain> page;
@@ -135,11 +157,30 @@ public class AuthorizationService {
     // save and return the final object
     try {
       authorizationRepository.delete(existingSubscriptionKeyDomain);
-      cachedAuthorizationRepository.remove(domain, subscriptionKey, customKeyFormat);
+      cachedAuthorizationRepository.removeSubscriptionKey(domain, subscriptionKey, customKeyFormat);
     } catch (DataAccessException e) {
       log.error("An error occurred while deleting the authorization.", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR_DELETE);
     }
+  }
+
+  public AuthorizedEntityList getAuthorizedEntitiesByDomain(@NotNull String domain) {
+    AuthorizedEntityList authorizedEntities = new AuthorizedEntityList();
+    try {
+      // Retrieve the cached value from Redis storage
+      Object rawValue = cachedAuthorizationRepository.read(String.format(authorizedEntitiesDomainsKeyFormat, domain));
+      if (rawValue != null) {
+        // If the value exists, then map the retrieved string in the required object
+        authorizedEntities = rawMapper.readValue(rawValue.toString(), AuthorizedEntityList.class);
+      } else {
+        // If the value doesn't exist, then create it!
+        authorizedEntities = saveAuthorizedEntitiesInCache(domain);
+      }
+    } catch (JsonProcessingException e) {
+      log.error("An error occurred while retrieving the list of authorized entities by domain.", e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR_RETRIEVE_AUTHORIZED_ENTITY, domain);
+    }
+    return authorizedEntities;
   }
 
   public CachedAuthorizationList getCachedAuthorization(@NotNull String domain, String ownerId, boolean convertTTL, String customKeyFormat) {
@@ -196,5 +237,25 @@ public class AuthorizationService {
 
       pageable = page.nextPageable();
     } while (page.hasNext());
+  }
+
+  public AuthorizedEntityList saveAuthorizedEntitiesInCache(String domain) throws JsonProcessingException {
+    // Search in DB the aggregated list of authorized entities
+    AuthorizedEntityList authorizedEntities = new AuthorizedEntityList();
+    Set<String> authorizedEntitiesByDomain = authorizationRepository.findAuthorizedEntitiesByDomain(domain);
+    // Map the retrieved set of authorized entities removing the unneeded values
+    authorizedEntitiesByDomain.remove("*");
+    authorizedEntities.setAuthorizedEntities(authorizedEntitiesByDomain);
+    authorizedEntities.setSize(authorizedEntitiesByDomain.size());
+    authorizedEntities.setDomain(domain);
+    authorizedEntities.setCreatedAt(LocalDateTime.now());
+    // If something is found, store the list of authorized entities in Redis storage
+    if (!authorizedEntitiesByDomain.isEmpty()) {
+      cachedAuthorizationRepository.save(
+              String.format(authorizedEntitiesDomainsKeyFormat, domain),
+              rawMapper.writeValueAsString(authorizedEntities),
+              authorizedEntitiesTTL);
+    }
+    return authorizedEntities;
   }
 }

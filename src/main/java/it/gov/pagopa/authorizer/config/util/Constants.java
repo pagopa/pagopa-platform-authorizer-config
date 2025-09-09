@@ -19,4 +19,6 @@ public class Constants {
   public static final String WILDCARD_CHARACTER = "*";
 
   public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
+
+  public static final String MDC_MAX_RESPONSE_BODY_SIZE_FOR_LOG = "maxResponseBodySizeForLog";
 }

@@ -1,12 +1,16 @@
 package it.gov.pagopa.authorizer.config.service;
 
 import com.azure.spring.data.cosmos.exception.CosmosAccessException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.gov.pagopa.authorizer.config.Application;
 import it.gov.pagopa.authorizer.config.entity.SubscriptionKeyDomain;
 import it.gov.pagopa.authorizer.config.exception.AppError;
 import it.gov.pagopa.authorizer.config.exception.AppException;
 import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationList;
+import it.gov.pagopa.authorizer.config.model.authorization.AuthorizedEntityList;
 import it.gov.pagopa.authorizer.config.model.cachedauthorization.CachedAuthorizationList;
 import it.gov.pagopa.authorizer.config.repository.AuthorizationRepository;
 import it.gov.pagopa.authorizer.config.repository.CachedAuthorizationRepository;
@@ -23,9 +27,10 @@ import org.springframework.dao.QueryTimeoutException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.persistence.NonUniqueResultException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -287,7 +292,7 @@ class AuthorizationServiceTest {
         // Mocking objects
         when(authorizationRepository.findById(id)).thenReturn(Optional.ofNullable(TestUtil.getSubscriptionKeyDomain(1, id, "gpd", "fakedomain")));
         doNothing().when(authorizationRepository).delete(any(SubscriptionKeyDomain.class));
-        doNothing().when(cachedAuthorizationRepository).remove(anyString(), anyString(), anyString());
+        doNothing().when(cachedAuthorizationRepository).removeSubscriptionKey(anyString(), anyString(), anyString());
         // executing logic
         assertDoesNotThrow(() -> authorizationService.deleteAuthorization(id, null));
     }
@@ -409,5 +414,92 @@ class AuthorizationServiceTest {
         // executing assertion check
         assertEquals(AppError.INTERNAL_SERVER_ERROR.httpStatus, exception.getHttpStatus());
         assertEquals(AppError.INTERNAL_SERVER_ERROR.title, exception.getTitle());
+    }
+
+
+
+
+    @ParameterizedTest
+    @CsvSource({
+            "small-domain,10",
+            "medium-domain,1000",
+            "big-domain,10000",
+            "huge-domain,50000",
+    })
+    void getAuthorizedEntitiesByDomain_200_notPreviouslyCached(String domain, String rawSize) {
+        // Mocking objects
+        int size = Integer.parseInt(rawSize);
+        Set<String> authorizedEntitiesIdentifiers = TestUtil.getAuthorizedEntitiesIdentifiers(size);
+        authorizedEntitiesIdentifiers.add("*"); // force wildcard setting
+        when(cachedAuthorizationRepository.read(domain)).thenReturn(Set.of());
+        when(authorizationRepository.findAuthorizedEntitiesByDomain(domain)).thenReturn(authorizedEntitiesIdentifiers);
+        // executing logic
+        AuthorizedEntityList result = authorizationService.getAuthorizedEntitiesByDomain(domain);
+        // executing assertion check
+        assertNotNull(result);
+        assertEquals((int) result.getSize(), size);
+        assertEquals(domain, result.getDomain());
+        assertEquals(result.getAuthorizedEntities().size(), size);
+        assertNotNull(result.getCreatedAt());
+        assertFalse(result.getAuthorizedEntities().contains("*"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "small-domain,10",
+            "medium-domain,1000",
+            "big-domain,10000",
+            "huge-domain,50000",
+    })
+    void getAuthorizedEntitiesByDomain_200_previouslyCached(String domain, String rawSize) throws JsonProcessingException {
+        // Mocking objects
+        int size = Integer.parseInt(rawSize);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String mockedCachedContent = objectMapper.writeValueAsString(TestUtil.getAuthorizedEntities(domain, size));
+        when(cachedAuthorizationRepository.read(anyString())).thenReturn(mockedCachedContent);
+        // executing logic
+        AuthorizedEntityList result = authorizationService.getAuthorizedEntitiesByDomain(domain);
+        // executing assertion check
+        assertNotNull(result);
+        assertEquals((int) result.getSize(), size);
+        assertEquals(domain, result.getDomain());
+        assertEquals(result.getAuthorizedEntities().size(), size);
+        assertNotNull(result.getCreatedAt());
+    }
+
+    @Test
+    void getAuthorizedEntitiesByDomain_200_noData() {
+        // Mocking objects
+        String domain = "fake-domain";
+        int size = 0;
+        when(cachedAuthorizationRepository.read(domain)).thenReturn(Set.of());
+        when(authorizationRepository.findAuthorizedEntitiesByDomain(domain)).thenReturn(new HashSet<>());
+        // executing logic
+        AuthorizedEntityList result = authorizationService.getAuthorizedEntitiesByDomain(domain);
+        // executing assertion check
+        assertNotNull(result);
+        assertEquals(size, (int) result.getSize());
+        assertEquals(domain, result.getDomain());
+        assertEquals(size, result.getAuthorizedEntities().size());
+        assertNotNull(result.getCreatedAt());
+    }
+
+    @Test
+    void getAuthorizedEntitiesByDomain_500() throws JsonProcessingException {
+        // Mocking objects
+        String domain = "fake-domain";
+        int size = 10;
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String mockedCachedContent = objectMapper.writeValueAsString(TestUtil.getAuthorizedEntities(domain, size));
+        mockedCachedContent = mockedCachedContent.substring(0, mockedCachedContent.length() - 5);
+        when(cachedAuthorizationRepository.read(anyString())).thenReturn(mockedCachedContent);
+        // executing logic
+        AppException exception = assertThrows(AppException.class, () -> authorizationService.getAuthorizedEntitiesByDomain(domain));
+        // executing assertion check
+        assertEquals(AppError.INTERNAL_SERVER_ERROR_RETRIEVE_AUTHORIZED_ENTITY.httpStatus, exception.getHttpStatus());
+        assertEquals(AppError.INTERNAL_SERVER_ERROR_RETRIEVE_AUTHORIZED_ENTITY.title, exception.getTitle());
+        verify(cachedAuthorizationRepository, never()).save(anyString(), any(), anyLong());
     }
 }

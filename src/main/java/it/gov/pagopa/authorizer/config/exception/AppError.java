@@ -35,7 +35,10 @@ public enum AppError {
 
   INTERNAL_SERVER_ERROR_REFRESH(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while refreshing the cached authorizations."),
 
-  INTERNAL_SERVER_ERROR_MULTIPLE_AUTHORIZATION_WITH_SAME_SUBKEY(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "There are multiple authorization with the same subscription key [%s]. Please, check if they are correct.");
+  INTERNAL_SERVER_ERROR_MULTIPLE_AUTHORIZATION_WITH_SAME_SUBKEY(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "There are multiple authorization with the same subscription key [%s]. Please, check if they are correct."),
+
+  INTERNAL_SERVER_ERROR_RETRIEVE_AUTHORIZED_ENTITY(HttpStatus.INTERNAL_SERVER_ERROR, Constants.INTERNAL_SERVER_ERROR, "An error occurred while retrieving the authorized entity for domain [%s]."),
+  ;
 
   public final HttpStatus httpStatus;
   public final String title;

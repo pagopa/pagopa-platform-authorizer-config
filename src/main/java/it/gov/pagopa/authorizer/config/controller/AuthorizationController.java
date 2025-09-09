@@ -11,7 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.gov.pagopa.authorizer.config.model.ProblemJson;
 import it.gov.pagopa.authorizer.config.model.authorization.Authorization;
 import it.gov.pagopa.authorizer.config.model.authorization.AuthorizationList;
+import it.gov.pagopa.authorizer.config.model.authorization.AuthorizedEntityList;
 import it.gov.pagopa.authorizer.config.service.AuthorizationService;
+import it.gov.pagopa.authorizer.config.util.Constants;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -222,4 +225,33 @@ public class AuthorizationController {
     authorizationService.deleteAuthorization(authorizationId, customKeyFormat);
     return ResponseEntity.noContent().build();
   }
+
+
+    /**
+     * GET /domains/{domain}/authorizedentities : Get authorized entities for passed domain
+     *
+     * @param domain The domain on which the authorized entities will be filtered.
+     * @return OK (status code 200) or Too many request (status code 429) or Service unavailable (status code 500)
+     */
+    @Operation(
+            summary = "Get authorized entities by domain",
+            security = {
+                    @SecurityRequirement(name = "ApiKey")
+            },
+            tags = { "Authorizations" })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthorizationList.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))
+            })
+    @GetMapping(value = "/domains/{domain}/authorizedentities", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<AuthorizedEntityList> getAuthorizedEntitiesByDomain(
+            @Parameter(description = "The identifier of the stored authorization.", required = true)
+            @PathVariable("domain") String domain) {
+        MDC.put(Constants.MDC_MAX_RESPONSE_BODY_SIZE_FOR_LOG, "3000");
+        return ResponseEntity.ok(authorizationService.getAuthorizedEntitiesByDomain(domain));
+    }
 }
