@@ -44,26 +44,30 @@ public class AuthorizationService {
 
   private ObjectMapper rawMapper;
 
-  @Value("${authorizer.configuration.limit}")
   private Integer configurationLimit;
 
-  @Value("${authorizer.configuration.offset}")
   private Integer configurationOffset;
 
-  @Value("${authorizer.cache.authorized-entities.key-format}")
   private String authorizedEntitiesDomainsKeyFormat;
 
-  @Value("${authorizer.cache.authorized-entities.ttl}")
   private Long authorizedEntitiesTTL;
 
   public AuthorizationService(CachedAuthorizationRepository cachedAuthorizationRepository,
                               AuthorizationRepository authorizationRepository,
                               ModelMapper modelMapper,
-                              ObjectMapper rawMapper) {
+                              ObjectMapper rawMapper,
+                              @Value("${authorizer.configuration.limit}") Integer configurationLimit,
+                              @Value("${authorizer.configuration.offset}") Integer configurationOffset,
+                              @Value("${authorizer.cache.authorized-entities.key-format}") String authorizedEntitiesDomainsKeyFormat,
+                              @Value("${authorizer.cache.authorized-entities.ttl}") Long authorizedEntitiesTTL) {
     this.cachedAuthorizationRepository = cachedAuthorizationRepository;
     this.authorizationRepository = authorizationRepository;
     this.modelMapper = modelMapper;
     this.rawMapper = rawMapper;
+    this.configurationLimit = configurationLimit;
+    this.configurationOffset = configurationOffset;
+    this.authorizedEntitiesDomainsKeyFormat = authorizedEntitiesDomainsKeyFormat;
+    this.authorizedEntitiesTTL = authorizedEntitiesTTL;
   }
 
   public AuthorizationList getAuthorizations(@NotBlank String domain, String ownerId, @NotNull Pageable pageable) {

@@ -21,16 +21,18 @@ public class AuthorizedEntitiesCacheScheduler {
 
     private CachedAuthorizationRepository cachedAuthorizationRepository;
 
-    @Value("${authorizer.cache.authorized-entities.lock.key-format}")
     private String authorizedEntitiesDomainsLockKeyFormat;
 
-    @Value("${authorizer.schedule.authorized-entities.domains}")
     private List<String> authorizedEntitiesDomains;
 
     public AuthorizedEntitiesCacheScheduler(AuthorizationService authorizationService,
-                                            CachedAuthorizationRepository cachedAuthorizationRepository) {
+                                            CachedAuthorizationRepository cachedAuthorizationRepository,
+                                            @Value("${authorizer.cache.authorized-entities.lock.key-format}") String authorizedEntitiesDomainsLockKeyFormat,
+                                            @Value("${authorizer.schedule.authorized-entities.domains}") List<String> authorizedEntitiesDomains) {
         this.authorizationService = authorizationService;
         this.cachedAuthorizationRepository = cachedAuthorizationRepository;
+        this.authorizedEntitiesDomainsLockKeyFormat = authorizedEntitiesDomainsLockKeyFormat;
+        this.authorizedEntitiesDomains = authorizedEntitiesDomains;
     }
 
     @Scheduled(cron = "${authorizer.schedule.authorized-entities.expression}")
