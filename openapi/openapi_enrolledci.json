@@ -4,7 +4,7 @@
     "title": "platform-authorizer-config",
     "description": "A microservice that provides a set of APIs to manage authorization records for the Authorizer system.",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.2.16-1-PAGOPA-3216-gh"
+    "version": "0.2.17"
   },
   "servers": [
     {
