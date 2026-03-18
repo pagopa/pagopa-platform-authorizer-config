@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.2.19"
+    tag: "0.2.19-1-fix-otlp-headers"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -87,7 +87,7 @@ microservice-chart:
     APP_VERSION: "metadata.labels['app.kubernetes.io/version']"
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
-    OTEL_EXPORTER_OTLP_HEADERS: 'elastic-otel-token-header'
+    OTEL_EXPORTER_OTLP_HEADERS: 'elastic-apm-secret-token'
     COSMOS_KEY: 'auth-d-cosmos-key'
     REDIS_PASSWORD: 'redis-password'
     REDIS_HOST: 'redis-hostname'
