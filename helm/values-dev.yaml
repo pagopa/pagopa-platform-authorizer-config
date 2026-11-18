@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.2.20"
+    tag: "0.2.21"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -58,9 +58,8 @@ microservice-chart:
     cooldownPeriod: 50 # seconds
     triggers:
       - type: cpu
+        metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
         metadata:
-          # Required
-          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "75"
   envConfig:
     JAVA_OPTS: "-XX:-UseBASE64Intrinsics"
