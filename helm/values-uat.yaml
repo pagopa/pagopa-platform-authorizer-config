@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.2.21"
+    tag: "0.2.21-2-PIDM-2620"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -62,6 +62,7 @@ microservice-chart:
         metadata:
           value: "75"
   envConfig:
+    JAVA_OPTS: "-XX:-UseBASE64Intrinsics"
     WEBSITE_SITE_NAME: 'pagopaplatformauthorizerconfig'
     ENV: 'uat'
     APP_LOGGING_LEVEL: 'DEBUG'
