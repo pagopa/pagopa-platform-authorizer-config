@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: ""
   image:
     repository: ghcr.io/pagopa/pagopa-platform-authorizer-config
-    tag: "0.2.21-1-PIDM-2620"
+    tag: "0.2.21-2-PIDM-2620"
     pullPolicy: Always
   livenessProbe:
     httpGet:
